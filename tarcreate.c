@@ -4,25 +4,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
+#include <dirent.h>
+#include <fcntl.h>
 #include <sys/sysmacros.h>
 #include "tarheader.h"
-
-int addtoarchive(char *path, int fd) {
-    header *file;
-
-    file = buildheader(path);
-    if(!file) {
-        return -1;
-    }
-
-    write(fd,file,512);
-
-    if(strcmp(file->typeflag,"5")) {
-        
-    }
-}
 
 header *buildheader(char *path) {
     struct stat filestat;
@@ -67,4 +55,37 @@ header *buildheader(char *path) {
     memcpy(out->prefix, , 155);
 
 
+}
+
+int addtoarchive(char *path, int fd) {
+    header *file;
+    int cur_file;
+    DIR *current_dir;
+    uint8_t buffer[512];
+    struct dirent *current_dirent;
+
+    file = buildheader(path);
+    if(!file) {
+        return -1;
+    }
+
+    write(fd,file,512);
+
+    if(strcmp(file->typeflag, "5")) {
+        current_dir = opendir(path);
+        if(!current_dir) {
+            return -2;
+        }
+
+        while((current_dirent = readdir(current_dir))) {
+            addtoarchive(current_dirent->d_name, fd);
+        }
+    } else {
+        cur_file = open(path, O_RDONLY);
+        memset(buffer, '\0', 512);
+        while(read(cur_file, buffer, 512)>0) {
+            write(fd, buffer, 512);
+            memset(buffer, '\0', 512);
+        }
+    }
 }
