@@ -12,9 +12,22 @@
 #include <sys/sysmacros.h>
 #include "tarheader.h"
 
+void octaltoasciiset(void *target, unsigned int in, int len) {
+    uint8_t *octal_buffer;
+    octal_buffer = (uint8_t *)malloc(len);
+    memset(octal_buffer, ' ', len);
+    snprintf(octal_buffer, len, "%o", in);
+    memcpy(target, octal_buffer, len);
+    free(octal_buffer);
+};
+
 header *buildheader(char *path) {
     struct stat filestat;
     char *typeflag;
+    int i;
+    int chksum;
+    chksum = 0;
+
     header *out = (header *)calloc(1,sizeof(header));
     if(!path || !out) {
         return NULL;
@@ -32,17 +45,12 @@ header *buildheader(char *path) {
         typeflag = "5";
     }
 
-    char major[8];
-    char minor[8];
-    snprintf(major, 8, "%o", major(filestat.st_dev));
-    snprintf(minor, 8, "%o", minor(filestat.st_dev));
-
     memcpy(out->name, path, strlen(path));
-    memcpy(out->mode, &filestat.st_mode, 8);
-    memcpy(out->uid, &filestat.st_uid, 8);
-    memcpy(out->gid, &filestat.st_gid, 8);
-    memcpy(out->size, &filestat.st_size, 12);
-    memcpy(out->mtime, &filestat.st_mtime, 12);
+    octaltoasciiset(out->mode, filestat.st_mode, 8);
+    octaltoasciiset(out->uid, filestat.st_uid, 8);
+    octaltoasciiset(out->gid, filestat.st_gid, 8);
+    octaltoasciiset(out->size, filestat.st_size, 12);
+    octaltoasciiset(out->mtime, filestat.st_mtime, 12);
     memset(out->chksum, ' ', 8);
     memcpy(out->typeflag, typeflag, 1);
     memcpy(out->linkname, &filestat.st_mode, 100);
@@ -50,11 +58,18 @@ header *buildheader(char *path) {
     memcpy(out->version, "00", 2);
     memcpy(out->uname, getpwuid(filestat.st_uid)->pw_name, 32);
     memcpy(out->gname, getgrgid(filestat.st_gid)->gr_name, 32);
-    memcpy(out->devmajor, major, 8);
-    memcpy(out->devminor, minor, 8);
+    octaltoasciiset(out->devmajor, major(filestat.st_dev), 8);
+    octaltoasciiset(out->devminor, minor(filestat.st_dev), 8);
+
     memcpy(out->prefix, , 155);
 
 
+    for(i = 0; i<512; i++) {
+        chksum += ((uint8_t *)out)[i];
+    }
+    octaltoasciiset(out->chksum,chksum,8);
+
+    return out;
 }
 
 int addtoarchive(char *path, int fd) {
@@ -71,7 +86,7 @@ int addtoarchive(char *path, int fd) {
 
     write(fd,file,512);
 
-    if(strcmp(file->typeflag, "5")) {
+    if(strncmp(file->typeflag, "5", 1)) {
         current_dir = opendir(path);
         if(!current_dir) {
             return -2;
