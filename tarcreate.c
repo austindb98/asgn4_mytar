@@ -26,10 +26,11 @@ header *buildheader(char *path) {
     char *typeflag;
     int i;
     int chksum;
+    char *name_ptr;
     chksum = 0;
 
     header *out = (header *)calloc(1,sizeof(header));
-    if(!path || !out) {
+    if(!path || !out || strlen(path) > 256) {
         return NULL;
     }
 
@@ -41,11 +42,21 @@ header *buildheader(char *path) {
         typeflag = "0";
     } else if((filestat.st_mode & S_IFMT) == S_IFLNK) {
         typeflag = "2";
+        readlink(path, out->linkname, 100);
     } else if((filestat.st_mode & S_IFMT) == S_IFDIR) {
         typeflag = "5";
     }
 
-    memcpy(out->name, path, strlen(path));
+    if(strlen(path) <= 100) {
+        memcpy(out->name, path, strlen(path));
+    } else {
+        while(strlen(name_ptr) > 100) {
+            name_ptr = strrchr(name_ptr,'/')+1;
+        }
+        memcpy(out->name, path, strlen(path));
+    }
+    strncpy(out->prefix, path, name_ptr-path);
+
     octaltoasciiset(out->mode, filestat.st_mode, 8);
     octaltoasciiset(out->uid, filestat.st_uid, 8);
     octaltoasciiset(out->gid, filestat.st_gid, 8);
@@ -53,16 +64,12 @@ header *buildheader(char *path) {
     octaltoasciiset(out->mtime, filestat.st_mtime, 12);
     memset(out->chksum, ' ', 8);
     memcpy(out->typeflag, typeflag, 1);
-    memcpy(out->linkname, &filestat.st_mode, 100);
     memcpy(out->magic, "ustar", 6);
     memcpy(out->version, "00", 2);
     memcpy(out->uname, getpwuid(filestat.st_uid)->pw_name, 32);
     memcpy(out->gname, getgrgid(filestat.st_gid)->gr_name, 32);
     octaltoasciiset(out->devmajor, major(filestat.st_dev), 8);
     octaltoasciiset(out->devminor, minor(filestat.st_dev), 8);
-
-    memcpy(out->prefix, , 155);
-
 
     for(i = 0; i<512; i++) {
         chksum += ((uint8_t *)out)[i];
@@ -95,6 +102,8 @@ int addtoarchive(char *path, int fd) {
         while((current_dirent = readdir(current_dir))) {
             addtoarchive(current_dirent->d_name, fd);
         }
+
+        closedir(current_dir);
     } else {
         cur_file = open(path, O_RDONLY);
         memset(buffer, '\0', 512);
