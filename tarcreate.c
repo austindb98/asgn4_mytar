@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/sysmacros.h>
+#include "tarcreate.h"
 #include "tarheader.h"
 
 void octaltoasciiset(void *target, unsigned int in, int len) {
@@ -26,7 +27,7 @@ header *buildheader(char *path) {
     char *typeflag;
     int i;
     int chksum;
-    char *name_ptr;
+    char *name_ptr = NULL;
     chksum = 0;
 
     header *out = (header *)calloc(1,sizeof(header));
@@ -112,4 +113,5 @@ int addtoarchive(char *path, int fd) {
             memset(buffer, '\0', 512);
         }
     }
+    return 0;
 }
