@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
 #include <dirent.h>
@@ -20,7 +19,7 @@ void octaltoasciiset(void *target, unsigned int in, int len) {
     snprintf(octal_buffer, len, "%o", in);
     memcpy(target, octal_buffer, len);
     free(octal_buffer);
-};
+}
 
 header *buildheader(char *path) {
     struct stat filestat;
@@ -32,10 +31,18 @@ header *buildheader(char *path) {
 
     header *out = (header *)calloc(1,sizeof(header));
     if(!path || !out || strlen(path) > 256) {
+        if(!path) {
+            printf("Path failure\n");
+        } else if (!out) {
+            perror("malloc");
+        } else {
+            printf("path too long?");
+        }
         return NULL;
     }
 
-    if(!lstat(path, &filestat)){
+    if(lstat(path, &filestat)){
+        perror("lstat");
         return NULL;
     }
 
@@ -48,6 +55,7 @@ header *buildheader(char *path) {
         typeflag = "5";
     }
 
+    name_ptr = path;
     if(strlen(path) <= 100) {
         memcpy(out->name, path, strlen(path));
     } else {
@@ -87,21 +95,34 @@ int addtoarchive(char *path, int fd) {
     uint8_t buffer[512];
     struct dirent *current_dirent;
 
+    printf("Building header for: %s\n", path);
+
     file = buildheader(path);
     if(!file) {
         return -1;
     }
 
     write(fd,file,512);
+    printf("Wrote header to file\n");
 
-    if(strncmp(file->typeflag, "5", 1)) {
+    if(!strncmp(file->typeflag, "5", 1)) {
+        printf("File is directory\n");
         current_dir = opendir(path);
         if(!current_dir) {
             return -2;
         }
 
         while((current_dirent = readdir(current_dir))) {
-            addtoarchive(current_dirent->d_name, fd);
+            char *new_path;
+            new_path = calloc(1,
+                    strlen(path) + strlen(current_dirent->d_name) + 2);
+                    /* Concat with '/' + '\0' */
+            strncat(new_path, path, strlen(path));
+            strncat(new_path, "/", 1);
+            strncat(new_path, current_dirent->d_name, strlen(current_dirent->d_name));
+            printf("Adding to archive: %s", new_path);
+            addtoarchive(new_path, fd);
+            free(new_path);
         }
 
         closedir(current_dir);
@@ -109,6 +130,7 @@ int addtoarchive(char *path, int fd) {
         cur_file = open(path, O_RDONLY);
         memset(buffer, '\0', 512);
         while(read(cur_file, buffer, 512)>0) {
+            printf("Copying file\n");
             write(fd, buffer, 512);
             memset(buffer, '\0', 512);
         }
