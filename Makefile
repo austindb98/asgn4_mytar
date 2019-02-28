@@ -1,2 +1,2 @@
 all:
-	gcc -ggdb mytar.c tarcreate.c
+	gcc -ggdb -o mytar mytar.c tarcreate.c

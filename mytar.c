@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include "tarcreate.h"
 
 int main(int argc, char *argv[]) {
@@ -37,6 +38,11 @@ int main(int argc, char *argv[]) {
         for(i = 3; i < argc; i++) {
             addtoarchive(argv[i],tarfd);
         }
+        uint8_t block[512];
+        memset(block,'\0',512);
+        write(tarfd,block,512);
+        write(tarfd,block,512);
+
         close(tarfd);
     }
 
