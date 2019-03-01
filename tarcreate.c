@@ -132,6 +132,8 @@ int addtoarchive(char *path, int fd) {
     write(fd,file,512);
     printf("Wrote header to file\n");
 
+
+
     if(!strncmp(file->typeflag, "5", 1)) {
         printf("File is directory\n");
         current_dir = opendir(path);
@@ -150,12 +152,13 @@ int addtoarchive(char *path, int fd) {
                 char *new_path;
                 new_path = calloc(1,
                         strlen(path) + strlen(current_dirent->d_name) + 2);
-                        /* Concat with '/' + '\0' */
+                /* Concat with '/' + '\0' */
                 strncpy(new_path, path, strlen(path));
                 if(path[strlen(path)-1] != '/') {
                     strncat(new_path,"/",1);
                 }
-                strncat(new_path, current_dirent->d_name, strlen(current_dirent->d_name));
+                strncat(new_path, current_dirent->d_name,
+                        strlen(current_dirent->d_name));
                 /*printf("Adding to archive: %s", new_path);*/
                 addtoarchive(new_path, fd);
                 free(new_path);
