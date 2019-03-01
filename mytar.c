@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
         s=1;
     }
 
-    if(!(c||x||v)) {
-        printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
+    if(!(c||x||t)) {
+        printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]\n");
         exit(EXIT_FAILURE);
     }
 
@@ -51,10 +51,14 @@ int main(int argc, char *argv[]) {
         write(tarfd,block,512);
 
         close(tarfd);
+        exit(0);
     } else if(x) {
         for(i = 2; i < argc; i++) {
             extract(argv[i]);
         }
+        exit(0);
+    } else if(t) {
+
     }
 
 }
