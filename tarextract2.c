@@ -96,14 +96,16 @@ void printheader(header *fileheader) {
 }
 
 char *makepath(header *fileheader) {
+    char *out = calloc(1,256);
     if(*(fileheader->prefix)) {
-        char *out = calloc(1,256);
+
         strncpy(out,fileheader->prefix,155);
         strcat(out,"/");
         strncat(out,fileheader->name,100);
         return out;
     } else {
-        return fileheader->name;
+        strncpy(out,fileheader->name,100);
+        return out;
     }
 }
 
