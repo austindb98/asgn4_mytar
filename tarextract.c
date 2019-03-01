@@ -95,31 +95,34 @@ int Extract(char *fileName) {
     struct utimbuf modTime;
     //buf3 = malloc(512);
     //strbuff = malloc(512);
-
+    char * path;
     /*directory check*/
     while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
 
         /*directory check*/
-        if((headerFile.name[0] != '\0') && 
-                (*(headerFile.typeflag) == DIRECTORY) 
+        if((headerFile.name[0] != '\0') 
+                && (*(headerFile.typeflag) == DIRECTORY) 
                 && (*(headerFile.typeflag) != 'L')) {
-            printf("Name of Directory: %s\n", headerFile.name);
+
+            path = makepath(&headerFile.name);
+            printf("Name of Directory: %s\n", path);
             mode = strtol(headerFile.mode, &buf3, OCT);
-            mkdir(headerFile.name, mode);
-            chown(headerFile.name, strtol(headerFile.uid, &strbuff, OCT), 
-                    strtol(headerFile.gid, &strbuff, OCT));
-            setTime(headerFile.name, strtol(headerFile.mtime, &strbuff, OCT));
+            mkdir(path, mode);
+            chown(path, strtol(headerFile.uid, &strbuff, OCT), 
+                strtol(headerFile.gid, &strbuff, OCT));
+            setTime(path, strtol(headerFile.mtime, &strbuff, OCT));
             //chdir(headerFile.name);
         }
         if(*(headerFile.typeflag) != DIRECTORY 
                 && *(headerFile.typeflag) != NULL 
                 && *(headerFile.typeflag) != 'L'){
+
             fileSize = strtol(headerFile.size, &buf3, OCT);
             buf = calloc(fileSize, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
             size = read(fdTar, buf, fileSize);
-
-            fdFile = open(headerFile.name,O_WRONLY|O_CREAT|O_TRUNC, 0644);
+            path = makepath(&headerFile.name);
+            fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, 0644);
             if(fdFile < 0){
                 perror("cannot open file");
                 exit(EXIT_FAILURE);
@@ -134,7 +137,7 @@ int Extract(char *fileName) {
             close(fdFile);
             modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
             modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
-            utime(headerFile.name, &modTime);
+            utime(path, &modTime);
             }
 
         }
