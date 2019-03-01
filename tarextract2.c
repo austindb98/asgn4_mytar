@@ -89,7 +89,7 @@ int extract(char *archivename) {
         return -1;
     }
 
-    int len, size, mode, fdFile;
+    int mode, fdFile;
     header fileheader;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
@@ -108,7 +108,7 @@ int extract(char *archivename) {
             mode = strtol(fileheader.mode, &buf3, OCT);
             mkdir(path, mode);
             chown(path, strtol(fileheader.uid, &strbuff, OCT),
-            strtol(fileheader.gid, &strbuff, OCT));
+                    strtol(fileheader.gid, &strbuff, OCT));
             setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
             //chdir(fileheader.name);
 
@@ -165,6 +165,7 @@ int extract(char *archivename) {
                 || *(fileheader.typeflag) == 'L')) {
             char *temp = calloc(1,101);
             strncpy(temp,fileheader.linkname,100);
+            printf("Link: %s\n",temp);
             symlink(temp,path);
             free(temp);
         }
