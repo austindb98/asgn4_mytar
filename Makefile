@@ -1,7 +1,7 @@
 all: clean mytar
 
-mytar: mytar.o tarcreate.o tarextract.o
-	gcc -ggdb -o mytar mytar.o tarcreate.o tarextract.o
+mytar: mytar.o tarcreate.o tarextract2.o
+	gcc -ggdb -o mytar mytar.o tarcreate.o tarextract2.o
 
 mytar.o: mytar.c tarheader.h tarutil.h
 	gcc -ggdb -c mytar.c
@@ -9,8 +9,8 @@ mytar.o: mytar.c tarheader.h tarutil.h
 tarcreate.o: tarcreate.c tarheader.h tarutil.h
 	gcc -ggdb -c tarcreate.c
 
-tarextract.o: tarextract.c tarheader.h tarutil.h
-	gcc -ggdb -c tarextract.c
+tarextract2.o: tarextract2.c tarheader.h tarutil.h
+	gcc -ggdb -c tarextract2.c
 
 clean:
 	rm -f mytar
