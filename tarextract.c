@@ -97,7 +97,7 @@ int Extract(char *fileName) {
     //strbuff = malloc(512);
     char * path;
     /*directory check*/
-    while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
+    while((size = read(fdTar, &headerFile, 512)) != 0) {
 
         /*directory check*/
         if((headerFile.name[0] != '\0') 
@@ -109,22 +109,23 @@ int Extract(char *fileName) {
             mode = strtol(headerFile.mode, &buf3, OCT);
             mkdir(path, mode);
             chown(path, strtol(headerFile.uid, &strbuff, OCT), 
-                strtol(headerFile.gid, &strbuff, OCT));
+            strtol(headerFile.gid, &strbuff, OCT));
             setTime(path, strtol(headerFile.mtime, &strbuff, OCT));
             //chdir(headerFile.name);
         }
         if(*(headerFile.typeflag) != DIRECTORY 
-                && *(headerFile.typeflag) != NULL 
+                && *(headerFile.typeflag) != '\0' 
                 && *(headerFile.typeflag) != 'L'){
-
+        
             fileSize = strtol(headerFile.size, &buf3, OCT);
-            buf = calloc(fileSize, sizeof(char));
+            buf = calloc(512, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
-            size = read(fdTar, buf, fileSize);
+            size = read(fdTar, buf, 512);
             path = makepath(&headerFile.name);
             fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, 0644);
             if(fdFile < 0){
-                perror("cannot open file");
+                fprintf(stderr, "cannot open file %s",path);
+                perror("");
                 exit(EXIT_FAILURE);
             }
             size = write(fdFile, buf, fileSize);
