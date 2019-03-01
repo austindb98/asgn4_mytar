@@ -90,7 +90,6 @@ int extract(char *archivename) {
     }
 
     int len, size, mode, fdFile;
-    uint8_t filesize;
     header fileheader;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
@@ -98,7 +97,7 @@ int extract(char *archivename) {
     //strbuff = malloc(512);
     char * path;
     /*directory check*/
-    while((size = read(fdTar, &fileheader, 512)) != 0) {
+    while(read(fdTar, &fileheader, 512) == 512) {
         /*directory check*/
         if(fileheader.name[0] != '\0'
                 && (*(fileheader.typeflag) == DIRECTORY)
@@ -128,14 +127,13 @@ int extract(char *archivename) {
                 exit(EXIT_FAILURE);
             }
 
-            int blocks,remainder;
-            filesize = strtol(fileheader.size, &buf3, OCT);
-            blocks = filesize/512;
-            remainder = filesize%512;
+            int bytes;
+            bytes = strtol(fileheader.size, &buf3, OCT);
 
             buf = calloc(513, sizeof(char));
 
-            for(;blocks>0;--blocks) {
+            for(;bytes>=512;bytes-=512) {
+                printf("bytes left: %d\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
@@ -145,12 +143,13 @@ int extract(char *archivename) {
                     exit(EXIT_FAILURE);
                 }
             }
-            if(remainder) {
+            if(bytes) {
+                printf("bytes left: %d\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
                 }
-                if(write(fdFile, buf, remainder)!=remainder) {
+                if(write(fdFile, buf, bytes)!=bytes) {
                     perror("write");
                     exit(EXIT_FAILURE);
                 }

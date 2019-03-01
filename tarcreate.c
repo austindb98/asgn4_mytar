@@ -137,8 +137,10 @@ int addtoarchive(char *path, int fd) {
                     strncpy(new_path,path,strlen(path));
                     strcat(new_path,"/");
                     strcat(new_path, current_dirent->d_name);
+
                     printf("Adding to archive: %s\n", new_path);
                     addtoarchive(new_path, fd);
+
                     free(new_path);
                 } else {
                     fprintf(stderr,"path too long");
