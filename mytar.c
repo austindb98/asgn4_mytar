@@ -64,6 +64,29 @@ int main(int argc, char *argv[]) {
         extract(argv[2], targetfiles, argc-3);
         exit(0);
     } else if(t) {
+        if(v){
+            char **targetfiles = NULL;
+            /*assumes xf file targets*/
+            if(argc > 3) {
+                targetfiles = calloc(sizeof(char *),argc-3);
+            }
+            for(i = 3; i < argc; i++) {
+                targetfiles[i-3] = argv[i];
+            }
+            tarlistVerbose(argv[2], targetfiles, argc-3);
+            exit(0);
+
+        }
+        char **targetfiles = NULL;
+        /*assumes xf file targets*/
+        if(argc > 3) {
+            targetfiles = calloc(sizeof(char *),argc-3);
+        }
+        for(i = 3; i < argc; i++) {
+            targetfiles[i-3] = argv[i];
+        }
+        tarlist(argv[2], targetfiles, argc-3);
+        exit(0);
 
     }
 
