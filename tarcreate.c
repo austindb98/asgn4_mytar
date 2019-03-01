@@ -157,13 +157,14 @@ int addtoarchive(char *path, int fd) {
                 printf("Reached %s\n", current_dirent->d_name);
             }
         }
+        printf("Reached end of dir\n");
 
         closedir(current_dir);
     } else {
         cur_file = open(path, O_RDONLY);
         memset(buffer, '\0', 512);
+        printf("Copying file: %s\n",path);
         while(read(cur_file, buffer, 512)>0) {
-            printf("Copying file\n");
             write(fd, buffer, 512);
             memset(buffer, '\0', 512);
         }
