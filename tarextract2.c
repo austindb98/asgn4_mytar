@@ -52,6 +52,19 @@ char *makepath(header *fileheader) {
     }
 }
 
+int validateheader(header *tarheader) {
+    header cpy;
+    int i,sum=0;
+    char *strsum = calloc(1,8);
+    memcpy(&cpy,tarheader,512);
+    memset(cpy.chksum,' ',8);
+    for(i = 0; i < 512; i++) {
+        sum+=((uint8_t *)tarheader)[i];
+    }
+    snprintf(strsum, 8, "%0*o", 7, sum);
+    return strncmp(strsum,tarheader->chksum,8);
+}
+
 
 /*
     char tmp[256];
@@ -98,6 +111,10 @@ int extract(char *archivename) {
     char * path;
     /*directory check*/
     while(read(fdTar, &fileheader, 512) == 512) {
+
+        if(validateheader(&fileheader)) {
+            fprintf(stderr, "---BAD HEADER---\n");
+        }
         /*directory check*/
         if(fileheader.name[0] != '\0'
                 && (*(fileheader.typeflag) == DIRECTORY)
