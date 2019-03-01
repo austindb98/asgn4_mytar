@@ -180,8 +180,9 @@ int extract(char *archivename) {
     while(read(fdTar, &fileheader, 512) == 512) {
         printheader(&fileheader);
         if(isheadernull(&fileheader)) {
-            printf("--- Current header null ---");
+            printf("--- Current header null ---\n");
             if(pastheadernull) {
+                printf("-     BREAKING     -\n");
                 break;
             }
         }
