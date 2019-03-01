@@ -11,11 +11,37 @@
 #define DIRECTORY '5'
 #define OCT 8
 
-static void makedir(const char *dir, mode_t mode) {
+char *dirtok(char *path) {
+    char *end;
+    char *new_path;
+    new_path = calloc(1,strlen(path));
+    end = strrchr(path,'/');
+    if((end != NULL)) {
+        strncpy(new_path,path, end-path);
+        printf("Changing to %s\n", new_path);
+        chdir(new_path);
+        return end;
+    } else {
+        printf("Remaining in %s\n", path);
+        return path;
+    }
+}
+static void makedir(char *path, mode_t mode) {
+    path[strlen(path)-1] = 0; 
+    char * newPath;
+    newPath = dirtok(path);
+    if(strcmp(newPath, path) == 0){
+        mkdir(path, mode);
+        chdir(path);
+    }else{
+    mkdir(newPath, mode);
+}
+
+
+/*
     char tmp[256];
     char *x = NULL;
     size_t len;
-
     snprintf(tmp, sizeof(tmp), "%s", dir);
     len = strlen(tmp);
     if(tmp[len - 1] == '/'){
@@ -29,7 +55,7 @@ static void makedir(const char *dir, mode_t mode) {
         }
     }
     mkdir(tmp,mode);
-
+*/
 }
 int setTime(char *fileName, time_t mtime) {
     struct utimbuf tmp;
@@ -64,35 +90,36 @@ int Extract(char *fileName) {
         if((headerFile.name[0] != '\0') && (*(headerFile.typeflag) == DIRECTORY)) {
             printf("Name of Directory: %s\n", headerFile.name);
             mode = strtol(headerFile.mode, &buf3, OCT);
-            makedir(headerFile.name, mode);
+            mkdir(headerFile.name, mode);
             chown(headerFile.name, strtol(headerFile.uid, &strbuff, OCT), strtol(headerFile.gid, &strbuff, OCT));
             setTime(headerFile.name, strtol(headerFile.mtime, &strbuff, OCT));
+            chdir(headerFile.name);
         }
-
-        fileSize = strtol(headerFile.size, &buf3, OCT);
-        buf = calloc(fileSize, sizeof(char));
-        mode = strtol(headerFile.mode, &buf3, OCT);
-        size = read(fdTar, buf, fileSize);
-
-        fdFile = open(headerFile.name,O_WRONLY|O_CREAT|O_TRUNC, 0644);
-        if(fdFile < 0){
-            perror("cannot open file");
-            exit(EXIT_FAILURE);
-        }
-        size = write(fdFile, buf, fileSize);
-
-        if(size != fileSize){
-            perror("error in writing file");
-        }
+        if(*(headerFile.typeflag) != DIRECTORY && *(headerFile.typeflag) != NULL){
+            fileSize = strtol(headerFile.size, &buf3, OCT);
+            buf = calloc(fileSize, sizeof(char));
+            mode = strtol(headerFile.mode, &buf3, OCT);
+            size = read(fdTar, buf, fileSize);
         
-        free(buf);
-        close(fdFile);
-        modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
-        modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
-        utime(headerFile.name, &modTime);
+            fdFile = open(headerFile.name,O_WRONLY|O_CREAT|O_TRUNC, 0644);
+            if(fdFile < 0){
+                perror("cannot open file");
+                exit(EXIT_FAILURE);
+            }
+            size = write(fdFile, buf, fileSize);
 
+            if(size != fileSize){
+                perror("error in writing file");
+            }
+        
+            free(buf);
+            close(fdFile);
+            modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
+            modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
+            utime(headerFile.name, &modTime);
+            }
 
-    }
+        }
     /*non-directory checks*/
     
   
