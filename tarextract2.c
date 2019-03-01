@@ -160,6 +160,11 @@ int extract(char *archivename) {
             modTime.modtime = strtol(fileheader.mtime, &buf3, OCT);
             modTime.actime = strtol(fileheader.mtime, &buf3, OCT);
             utime(path, &modTime);
+        } else if(fileheader.typeflag[0] != DIRECTORY
+                && *(fileheader.typeflag) != '\0'
+                && *(fileheader.typeflag) == 'L') {
+
+            symlink(path,fileheader.linkname);
         }
     }
 
