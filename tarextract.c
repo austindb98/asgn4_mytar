@@ -27,14 +27,27 @@ char *dirtok(char *path) {
     }
 }
 static void makedir(char *path, mode_t mode) {
-    path[strlen(path)-1] = 0; 
+    path[strlen(path)-1] = 0;
     char * newPath;
     newPath = dirtok(path);
     if(strcmp(newPath, path) == 0){
         mkdir(path, mode);
         chdir(path);
     }else{
-    mkdir(newPath, mode);
+        mkdir(newPath, mode);
+    }
+}
+
+char *makepath(header *fileheader) {
+    if(*(fileheader->prefix)) {
+        char *out = calloc(1,256);
+        strncpy(out,fileheader->prefix,155);
+        strncat(out,"/",1);
+        strncat(out,fileheader->name,100);
+        return out;
+    } else {
+        return fileheader->name;
+    }
 }
 
 
@@ -56,7 +69,7 @@ static void makedir(char *path, mode_t mode) {
     }
     mkdir(tmp,mode);
 */
-}
+
 int setTime(char *fileName, time_t mtime) {
     struct utimbuf tmp;
 
@@ -100,7 +113,7 @@ int Extract(char *fileName) {
             buf = calloc(fileSize, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
             size = read(fdTar, buf, fileSize);
-        
+
             fdFile = open(headerFile.name,O_WRONLY|O_CREAT|O_TRUNC, 0644);
             if(fdFile < 0){
                 perror("cannot open file");
@@ -111,7 +124,7 @@ int Extract(char *fileName) {
             if(size != fileSize){
                 perror("error in writing file");
             }
-        
+
             free(buf);
             close(fdFile);
             modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
@@ -121,8 +134,8 @@ int Extract(char *fileName) {
 
         }
     /*non-directory checks*/
-    
-  
+
+
     close(fdTar);
     return 0;
 
