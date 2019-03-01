@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     int tarfd;
     int i;
 
-    if(argc <= 1) {
+    if(argc <= 2) {
         fprintf(stderr,"Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
         exit(EXIT_FAILURE);
     }
@@ -53,7 +53,15 @@ int main(int argc, char *argv[]) {
         close(tarfd);
         exit(0);
     } else if(x) {
-        extract(argv[2]);
+        char **targetfiles = NULL;
+        /*assumes xf file targets*/
+        if(argc > 3) {
+            targetfiles = calloc(sizeof(char *),argc-3);
+        }
+        for(i = 3; i < argc; i++) {
+            targetfiles[i-3] = argv[i];
+        }
+        extract(argv[2], targetfiles, argc-3);
         exit(0);
     } else if(t) {
 
