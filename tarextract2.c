@@ -117,7 +117,7 @@ int extract(char *archivename) {
         if(fileheader.typeflag[0] != DIRECTORY
                 && *(fileheader.typeflag) != '\0'
                 && *(fileheader.typeflag) != 'L') {
-
+            printf("Extracting: %s", fileheader.name);
             path = makepath(&fileheader);
             mode = strtol(fileheader.mode, &buf3, OCT);
             fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, mode);
