@@ -163,8 +163,10 @@ int extract(char *archivename) {
         } else if(fileheader.typeflag[0] != DIRECTORY
                 && *(fileheader.typeflag) != '\0'
                 && *(fileheader.typeflag) == 'L') {
-
-            symlink(fileheader.linkname,path);
+            char *temp = calloc(1,101);
+            strncpy(temp,fileheader.linkname,100);
+            symlink(temp,path);
+            free(temp);
         }
     }
 
