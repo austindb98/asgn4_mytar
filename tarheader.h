@@ -17,4 +17,5 @@ typedef struct{
 	uint8_t devmajor[8];
 	uint8_t devminor[8];
 	uint8_t prefix[155];
+	uint8_t null[12];
 } header;
