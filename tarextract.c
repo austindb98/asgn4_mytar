@@ -54,6 +54,8 @@ int Extract(char *fileName) {
     header headerFile;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
+    buf3 = malloc(512);
+    strbuff = malloc(512);
 
     /*directory check*/
     while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
@@ -61,15 +63,15 @@ int Extract(char *fileName) {
         /*directory check*/
         if((headerFile.name[0] != '\0') && (*(headerFile.typeflag) == DIRECTORY)) {
             printf("Name of Directory: %s\n", headerFile.name);
-            mode = strtol(headerFile.mode, buf3, OCT);
+            mode = strtol(headerFile.mode, &buf3, OCT);
             makedir(headerFile.name, mode);
-            chown(headerFile.name, strtol(headerFile.uid, strbuff, OCT), strtol(headerFile.gid, strbuff, OCT));
-            setTime(headerFile.name, strtol(headerFile.mtime, strbuff, OCT));
+            chown(headerFile.name, strtol(headerFile.uid, &strbuff, OCT), strtol(headerFile.gid, &strbuff, OCT));
+            setTime(headerFile.name, strtol(headerFile.mtime, &strbuff, OCT));
         }
 
-        fileSize = strtol(headerFile.size, buf3, OCT);
+        fileSize = strtol(headerFile.size, &buf3, OCT);
         buf = calloc(fileSize, sizeof(char));
-        mode = strtol(headerFile.mode, buf3, OCT);
+        mode = strtol(headerFile.mode, &buf3, OCT);
         size = read(fdTar, buf, fileSize);
 
         fdFile = open(headerFile.name,O_CREAT | O_TRUNC | O_WRONLY, mode);
@@ -82,10 +84,12 @@ int Extract(char *fileName) {
         if(size != fileSize){
             perror("error in writing file");
         }
+        free(strbuff);
+        free(buf3);
         free(buf);
         close(fdFile);
-        modTime.modtime = strtol(headerFile.mtime, buf3, OCT);
-        modTime.actime = strtol(headerFile.mtime, buf3, OCT);
+        modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
+        modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
         utime(headerFile.name, &modTime);
 
 
