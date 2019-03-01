@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/sysmacros.h>
-#include "tarcreate.h"
+#include "tarutil.h"
 #include "tarheader.h"
 
 /*Convert and format octal ascii strings*/
@@ -142,7 +142,7 @@ int addtoarchive(char *path, int fd) {
                     && current_dirent->d_ino != parent.st_ino) {
 
                 char *new_path = calloc(1,257);
-                
+
                 if((strlen(path)+strlen(current_dirent->d_name)) < 255) {
                     strncpy(new_path,path,strlen(path));
                     strcat(new_path,"/");
