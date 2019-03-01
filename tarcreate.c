@@ -22,10 +22,22 @@ void octaltoasciiset(void *target, unsigned int in, int len) {
     free(octal_buffer);
 }
 
-/*int chdirend(char *path) {
+char *dirtok(char *path) {
+    char *end;
     char *new_path;
-    for(new_path = path; new_path = strrchr())
-}*/
+    new_path = calloc(1,strlen(path));
+    end = strrchr(path,'/')+1;
+    if((end-1)) {
+        strncpy(new_path,path,end-path);
+        printf("Changing to %s\n", new_path);
+        chdir(new_path);
+        return end;
+    } else {
+        printf("Remaining in %s\n", path);
+        chdir(path);
+        return path;
+    }
+}
 
 header *buildheader(char *path) {
     struct stat filestat;
@@ -86,6 +98,7 @@ header *buildheader(char *path) {
     memcpy(out->gname, getgrgid(filestat.st_gid)->gr_name, 32);
     octaltoasciiset(out->devmajor, major(filestat.st_dev), 8);
     octaltoasciiset(out->devminor, minor(filestat.st_dev), 8);
+    memset(out->null, '\0', 12);
 
     for(i = 0; i<512; i++) {
         chksum += ((uint8_t *)out)[i];
@@ -104,6 +117,10 @@ int addtoarchive(char *path, int fd) {
     struct stat self;
     struct stat parent;
     char *pathparent = calloc(1,strlen(path) + 4);
+    char buf[PATH_MAX];
+
+    getcwd(buf,PATH_MAX);
+    printf("cwd: %s\n",buf);
 
     printf("Building header for: %s\n", path);
 
@@ -157,5 +174,6 @@ int addtoarchive(char *path, int fd) {
             memset(buffer, '\0', 512);
         }
     }
+    chdir(cwd);
     return 0;
 }

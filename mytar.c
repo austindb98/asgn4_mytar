@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <limits.h>
 #include "tarcreate.h"
 
 int main(int argc, char *argv[]) {
@@ -15,6 +16,8 @@ int main(int argc, char *argv[]) {
         printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
         exit(-1);
     }
+
+    getcwd(cwd,PATH_MAX);
 
     c=0,x=0,t=0,v=0,s=0;
     if(strchr(argv[1],'c')) {
@@ -36,7 +39,9 @@ int main(int argc, char *argv[]) {
     if(c) {
         tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
         for(i = 3; i < argc; i++) {
-            addtoarchive(argv[i],tarfd);
+            char *path = argv[i];
+            path = dirtok(path);
+            addtoarchive(path,tarfd);
         }
         uint8_t block[512];
         memset(block,'\0',512);
