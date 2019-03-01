@@ -17,8 +17,6 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    getcwd(cwd,PATH_MAX);
-
     c=0,x=0,t=0,v=0,s=0;
     if(strchr(argv[1],'c')) {
         c=1;
