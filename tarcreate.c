@@ -71,8 +71,8 @@ header *buildheader(char *path) {
         }
         strncpy(out->name, name_ptr, strlen(name_ptr));
     }
-    if(name_ptr) {
-        strncpy(out->prefix, path, name_ptr-path-1);
+    if(name_ptr > 1) {
+        strncpy(out->prefix, path, (name_ptr-1)-path);
     }
 
     octaltoasciiset(out->mode, filestat.st_mode, 8);
