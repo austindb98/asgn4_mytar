@@ -53,9 +53,7 @@ int main(int argc, char *argv[]) {
         close(tarfd);
         exit(0);
     } else if(x) {
-        for(i = 2; i < argc; i++) {
-            extract(argv[i]);
-        }
+        extract(argv[2]);
         exit(0);
     } else if(t) {
 
