@@ -46,7 +46,7 @@ void tarlist(char *filename, char **targets, int numtargets){
         perror("listing");
         return -1;
     }
-    int len, size, mode, fdFile;
+    int len, size, mode, fdFile, i;
     uint8_t fileSize;
     header headerFile;
     char *strbuff, *buf, *buf3;
@@ -55,7 +55,7 @@ void tarlist(char *filename, char **targets, int numtargets){
     while((size = read(fdTar, &headerFile, 512)) != 0) {
         /*if targets check*/
         int targetflag = targets?0:1;
-        path = makepath(&fileheader);
+        path = makepath(&headerFile);
         for(i =0; i < numtargets; i++) {
             if(!strcmp(path,targets[i])) {
                 targetflag = 1;
@@ -110,7 +110,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
 
         /*if targets check*/
         int targetflag = targets?0:1;
-        path = makepath(&fileheader);
+        path = makepath(&headerFile);
         for(i =0; i < numtargets; i++) {
             if(!strcmp(path,targets[i])) {
                 targetflag = 1;
@@ -159,10 +159,3 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
 
 }
 
-
-
-/*temp main im using for testing*/
-void main(int argc, char *argv[]) {
-    tarlistVerbose(argv[1]);
-    
-}
