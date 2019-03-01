@@ -64,16 +64,11 @@ header *buildheader(char *path) {
         memcpy(out->name, path, strlen(path));
     } else {
         while(strlen(name_ptr) > 100) {
-            name_ptr = strchr(name_ptr,'/');
-            if(name_ptr){
-                name_ptr++;
-            }
+            name_ptr = strchr(name_ptr,'/')+1;
         }
         strncpy(out->name, name_ptr, strlen(name_ptr));
     }
-    if(name_ptr > 1) {
-        strncpy(out->prefix, path, (name_ptr-1)-path);
-    }
+    strncpy(out->prefix, path, name_ptr-path);
 
     octaltoasciiset(out->mode, filestat.st_mode, 8);
     octaltoasciiset(out->uid, filestat.st_uid, 8);
