@@ -179,8 +179,9 @@ int extract(char *archivename) {
     /*directory check*/
     while(read(fdTar, &fileheader, 512) == 512) {
         printheader(&fileheader);
-        if(pastheadernull) {
-            if(isheadernull(&fileheader)) {
+        if(isheadernull(&fileheader)) {
+            printf("--- Current header null ---");
+            if(pastheadernull) {
                 break;
             }
         }
