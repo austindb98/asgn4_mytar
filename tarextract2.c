@@ -132,8 +132,9 @@ int extract(char *archivename) {
 
             buf = calloc(513, sizeof(char));
 
+            printf("File size: %dB\n", bytes);
             for(;bytes>=512;bytes-=512) {
-                printf("bytes left: %d\n", bytes);
+                printf("bytes left: %dB\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
@@ -144,7 +145,7 @@ int extract(char *archivename) {
                 }
             }
             if(bytes) {
-                printf("bytes left: %d\n", bytes);
+                printf("bytes left (last pull): %dB\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
