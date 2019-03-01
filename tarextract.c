@@ -44,7 +44,7 @@ char *makepath(header *fileheader) {
     if(*(fileheader->prefix)) {
         char *out = calloc(1,256);
         strncpy(out,fileheader->prefix,155);
-        strncat(out,"/",1);
+        strcat(out,"/");
         strncat(out,fileheader->name,100);
         return out;
     } else {
@@ -104,7 +104,7 @@ int extract(char *fileName) {
                 && (*(headerFile.typeflag) == DIRECTORY)
                 && (*(headerFile.typeflag) != 'L')) {
 
-            path = makepath(&headerFile.name);
+            path = makepath(&headerFile);
             printf("Name of Directory: %s\n", path);
             mode = strtol(headerFile.mode, &buf3, OCT);
             mkdir(path, mode);
@@ -122,7 +122,7 @@ int extract(char *fileName) {
             buf = calloc(512, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
             size = read(fdTar, buf, 512);
-            path = makepath(&headerFile.name);
+            path = makepath(&headerFile);
             fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
             if(fdFile < 0) {

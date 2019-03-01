@@ -22,17 +22,7 @@ void octaltoasciiset(void *target, unsigned int in, int len) {
     free(octal_buffer);
 }
 
-char *makepath(header *fileheader) {
-    if(*(fileheader->prefix)) {
-        char *out = calloc(1,256);
-        strncpy(out,fileheader->prefix,155);
-        strcat(out,"/");
-        strncat(out,fileheader->name,100);
-        return out;
-    } else {
-        return fileheader->name;
-    }
-}
+
 
 header *buildheader(char *path) {
     struct stat filestat;

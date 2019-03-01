@@ -1,3 +1,5 @@
+#ifndef HEADER
+#define HEADER
 #include <stdint.h>
 
 typedef struct{
@@ -19,3 +21,4 @@ typedef struct{
 	uint8_t prefix[155];
 	uint8_t null[12];
 } header;
+#endif
