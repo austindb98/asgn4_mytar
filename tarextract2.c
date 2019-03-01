@@ -112,11 +112,11 @@ int extract(char *archivename) {
             strtol(fileheader.gid, &strbuff, OCT));
             setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
             //chdir(fileheader.name);
-        }
 
-        if(fileheader.typeflag[0] != DIRECTORY
+        } else if(fileheader.typeflag[0] != DIRECTORY
                 && *(fileheader.typeflag) != '\0'
                 && *(fileheader.typeflag) != 'L') {
+
             printf("Extracting: %s", fileheader.name);
             path = makepath(&fileheader);
             mode = strtol(fileheader.mode, &buf3, OCT);
@@ -133,7 +133,7 @@ int extract(char *archivename) {
             blocks = filesize/512;
             remainder = filesize%512;
 
-            buf = calloc(512, sizeof(char));
+            buf = calloc(513, sizeof(char));
 
             for(;blocks>0;blocks--) {
                 if(read(fdTar, buf, 512)!=512) {
@@ -141,7 +141,7 @@ int extract(char *archivename) {
                     exit(EXIT_FAILURE);
                 }
                 if(write(fdFile, buf, 512)!=512) {
-                    perror("read");
+                    perror("write");
                     exit(EXIT_FAILURE);
                 }
             }
@@ -151,7 +151,7 @@ int extract(char *archivename) {
                     exit(EXIT_FAILURE);
                 }
                 if(write(fdFile, buf, remainder)!=remainder) {
-                    perror("read");
+                    perror("write");
                     exit(EXIT_FAILURE);
                 }
             }
@@ -163,6 +163,7 @@ int extract(char *archivename) {
             utime(path, &modTime);
         }
     }
+
     /*non-directory checks*/
 
     close(fdTar);
