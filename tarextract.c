@@ -26,7 +26,8 @@ char *dirtok(char *path) {
         return path;
     }
 }
-static void makedir(char *path, mode_t mode) {
+
+void makedir(char *path, mode_t mode) {
     path[strlen(path)-1] = 0;
     char * newPath;
     newPath = dirtok(path);

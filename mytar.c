@@ -40,7 +40,6 @@ int main(int argc, char *argv[]) {
         tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
         for(i = 3; i < argc; i++) {
             char *path = argv[i];
-            path = dirtok(path);
             addtoarchive(path,tarfd);
         }
         uint8_t block[512];
