@@ -117,7 +117,7 @@ int extract(char *archivename) {
                 && *(fileheader.typeflag) != '\0'
                 && *(fileheader.typeflag) != 'L') {
 
-            printf("Extracting: %s", fileheader.name);
+            printf("Extracting: %s\n", fileheader.name);
             path = makepath(&fileheader);
             mode = strtol(fileheader.mode, &buf3, OCT);
             fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, mode);
@@ -135,7 +135,7 @@ int extract(char *archivename) {
 
             buf = calloc(513, sizeof(char));
 
-            for(;blocks>0;blocks--) {
+            for(;blocks>0;--blocks) {
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
