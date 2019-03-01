@@ -9,7 +9,7 @@
 #include "tarheader.h"
 
 #define DIRECTORY '5'
-#define OCT '8'
+#define OCT 8
 
 static void makedir(const char *dir, mode_t mode) {
     char tmp[256];
@@ -50,12 +50,12 @@ int Extract(char *fileName) {
         return -1;
     }
     int len, size, mode, fdFile;
-    ssize_t fileSize;
+    uint8_t fileSize;
     header headerFile;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
-    buf3 = malloc(512);
-    strbuff = malloc(512);
+    //buf3 = malloc(512);
+    //strbuff = malloc(512);
 
     /*directory check*/
     while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
@@ -74,7 +74,7 @@ int Extract(char *fileName) {
         mode = strtol(headerFile.mode, &buf3, OCT);
         size = read(fdTar, buf, fileSize);
 
-        fdFile = open(headerFile.name,O_CREAT | O_TRUNC | O_WRONLY, mode);
+        fdFile = open(headerFile.name,O_WRONLY|O_CREAT|O_TRUNC, 0644);
         if(fdFile < 0){
             perror("cannot open file");
             exit(EXIT_FAILURE);
@@ -84,8 +84,7 @@ int Extract(char *fileName) {
         if(size != fileSize){
             perror("error in writing file");
         }
-        free(strbuff);
-        free(buf3);
+        
         free(buf);
         close(fdFile);
         modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
