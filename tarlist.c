@@ -146,7 +146,8 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                 path = makepath(&headerFile.name);
                 size = strtol(headerFile.size, &buf, OCT);
                 printf("%s %s %s %9u %s %s\n", permStr, 
-                        headerFile.uname, headerFile.gname, size, timebuf, path);
+                        headerFile.uname, headerFile.gname,
+                        size, timebuf, path);
               }   
             }
         
