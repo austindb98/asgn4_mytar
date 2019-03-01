@@ -90,10 +90,12 @@ void tarlistVerbose(char *filename){
     uint8_t fileSize;
     header headerFile;
     permChar *pChar;
+    char *timebuf[80];
     char  *buf;
     char permStr[11], *timeStr;
     time_t mtime;
     char * path;
+    struct tm *info;
     while((size = read(fdTar, &headerFile, 512)) != 0) {
         if((headerFile.name[0] != '\0')  
                 && (*(headerFile.typeflag) != 'L')) {
@@ -116,10 +118,12 @@ void tarlistVerbose(char *filename){
                 }
             }
             mtime = strtol(headerFile.mtime, &buf, OCT);
-            timeStr = asctime(gmtime(&mtime));
+            time(&mtime);
+            info = localtime(&mtime);
+            strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
             path = makepath(&headerFile.name);
             size = strtol(headerFile.size, &buf, OCT);
-            printf("%s %s %s %9u %s %s\n", permStr, headerFile.uname, headerFile.gname, size, timeStr, path);
+            printf("%s %s %s %9u %s %s\n", permStr, headerFile.uname, headerFile.gname, size, timebuf, path);
           }   
         }
         
