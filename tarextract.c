@@ -31,7 +31,6 @@ static void makedir(const char *dir, mode_t mode) {
     mkdir(tmp,mode);
 
 }
-
 int setTime(char *fileName, time_t mtime) {
     struct utimbuf tmp;
 
@@ -40,14 +39,6 @@ int setTime(char *fileName, time_t mtime) {
     utime(fileName, &tmp);
 
     return 0;
-}
-
-int getLen(int x) {
-    if( x == 512) {
-        return 0;
-    } else {
-        return(512 -(x % 512));
-    }
 }
 
 int Extract(char *fileName) {
@@ -60,28 +51,28 @@ int Extract(char *fileName) {
     }
     int len, size, mode, fdFile;
     ssize_t fileSize;
-    Header header;
+    header headerFile;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
 
     /*directory check*/
-    while((size = read(fdTar, &header, sizeof(Header))) != 0) {
+    while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
 
         /*directory check*/
-        if((header.name[0] != '\0') && (*(header.typeflag) == DIRECTORY)) {
-            printf("Name of Directory: %s\n", header.name);
-            mode = strtol(header.mode, &buf3, OCT);
-            mkdir(header.name, mode);
-            chown(header.name, strtol(header.uid, &strbuff, OCT), strtol(header.gid, &strbuff, OCT));
-            setTime(header.name, strtol(header.mtime, &strbuff, OCT));
+        if((headerFile.name[0] != '\0') && (*(headerFile.typeflag) == DIRECTORY)) {
+            printf("Name of Directory: %s\n", headerFile.name);
+            mode = strtol(headerFile.mode, buf3, OCT);
+            makedir(headerFile.name, mode);
+            chown(headerFile.name, strtol(headerFile.uid, strbuff, OCT), strtol(headerFile.gid, strbuff, OCT));
+            setTime(headerFile.name, strtol(headerFile.mtime, strbuff, OCT));
         }
 
-        fileSize = strtol(header.size, &buf3, OCT);
+        fileSize = strtol(headerFile.size, buf3, OCT);
         buf = calloc(fileSize, sizeof(char));
-        mode = strtol(header.mode, &buf3, OCT);
+        mode = strtol(headerFile.mode, buf3, OCT);
         size = read(fdTar, buf, fileSize);
 
-        fdFile = open(header.name,O_CREAT | O_TRUNC | O_WRONLY, mode);
+        fdFile = open(headerFile.name,O_CREAT | O_TRUNC | O_WRONLY, mode);
         if(fdFile < 0){
             perror("cannot open file");
             exit(EXIT_FAILURE);
@@ -93,9 +84,9 @@ int Extract(char *fileName) {
         }
         free(buf);
         close(fdFile);
-        modTime.modtime = strtol(header.mtime, &buf3, OCT);
-        modTime.actime = strtol(header.mtime, &buf3, OCT);
-        utime(header.name, &modTime);
+        modTime.modtime = strtol(headerFile.mtime, buf3, OCT);
+        modTime.actime = strtol(headerFile.mtime, buf3, OCT);
+        utime(headerFile.name, &modTime);
 
 
     }
