@@ -92,7 +92,7 @@ void printheader(header *fileheader) {
     printf("prefix: %s\n",buf);
     memset(buf,'\0',256);
     memcpy(buf,fileheader->null,12);
-    printf("null?: %s\n",buf);
+    printf("null?: %s\n\n",buf);
 }
 
 char *makepath(header *fileheader) {
@@ -105,6 +105,16 @@ char *makepath(header *fileheader) {
     } else {
         return fileheader->name;
     }
+}
+
+int isheadernull(header *tarheader) {
+    int i;
+    for(i = 0; i < 512; i++) {
+        if(((uint8_t *)tarheader)[i]) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int validateheader(header *tarheader) {
@@ -164,9 +174,17 @@ int extract(char *archivename) {
     //buf3 = malloc(512);
     //strbuff = malloc(512);
     char * path;
+    int pastheadernull = 0;
+
     /*directory check*/
     while(read(fdTar, &fileheader, 512) == 512) {
         printheader(&fileheader);
+        if(pastheadernull) {
+            if(isheadernull(&fileheader)) {
+                break;
+            }
+        }
+        pastheadernull = isheadernull(&fileheader);
         /*if(validateheader(&fileheader)) {
             fprintf(stderr, "---BAD HEADER---\n");
         }*/
