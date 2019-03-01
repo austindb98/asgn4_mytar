@@ -7,6 +7,7 @@
 #include <utime.h>
 #include <string.h>
 #include "tarheader.h"
+#include "tarutil.h"
 #include <time.h>
 #define S_IFMT 0160000 /* type of file: */
 #define S_IFDIR 0040000 /* directory */
@@ -22,7 +23,7 @@ typedef struct {
 }permChar;
 
 
-
+/*
 char *makepath(header *fileheader) {
     if(*(fileheader->prefix)) {
         char *out = calloc(1,256);
@@ -34,7 +35,7 @@ char *makepath(header *fileheader) {
         return fileheader->name;
     }
 }
-
+*/
 
 
 
