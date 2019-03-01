@@ -56,7 +56,8 @@ void tarlist(char *filename){
         if((headerFile.name[0] != '\0')  
                 && (*(headerFile.typeflag) != 'L')) {
 
-            if((headerFile.typeflag[0] == '0') || (headerFile.typeflag[0] == DIRECTORY)){
+            if((headerFile.typeflag[0] == '0') 
+                    || (headerFile.typeflag[0] == DIRECTORY)){
             path = makepath(&headerFile.name);
             printf("%s\n", path);
           }   
@@ -100,7 +101,8 @@ void tarlistVerbose(char *filename){
         if((headerFile.name[0] != '\0')  
                 && (*(headerFile.typeflag) != 'L')) {
 
-            if((headerFile.typeflag[0] == '0') || (headerFile.typeflag[0] == DIRECTORY)){
+            if((headerFile.typeflag[0] == '0') 
+                    || (headerFile.typeflag[0] == DIRECTORY)){
             
             mode = strtol(headerFile.mode, &buf, OCT);
             for(i = 0; i < 10; i++){
@@ -123,7 +125,8 @@ void tarlistVerbose(char *filename){
             strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
             path = makepath(&headerFile.name);
             size = strtol(headerFile.size, &buf, OCT);
-            printf("%s %s %s %9u %s %s\n", permStr, headerFile.uname, headerFile.gname, size, timebuf, path);
+            printf("%s %s %s %9u %s %s\n", permStr, 
+                    headerFile.uname, headerFile.gname, size, timebuf, path);
           }   
         }
         
