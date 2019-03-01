@@ -161,8 +161,8 @@ int extract(char *archivename) {
             modTime.actime = strtol(fileheader.mtime, &buf3, OCT);
             utime(path, &modTime);
         } else if(fileheader.typeflag[0] != DIRECTORY
-                && *(fileheader.typeflag) != '\0'
-                && *(fileheader.typeflag) == 'L') {
+                && (*(fileheader.typeflag) == '2'
+                || *(fileheader.typeflag) == 'L')) {
             char *temp = calloc(1,101);
             strncpy(temp,fileheader.linkname,100);
             symlink(temp,path);
