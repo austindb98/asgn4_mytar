@@ -87,15 +87,15 @@ int Extract(char *fileName) {
     while((size = read(fdTar, &headerFile, sizeof(header))) != 0) {
 
         /*directory check*/
-        if((headerFile.name[0] != '\0') && (*(headerFile.typeflag) == DIRECTORY)) {
+        if((headerFile.name[0] != '\0') && (*(headerFile.typeflag) == DIRECTORY) && (*(headerFile.typeflag) != 'L')) {
             printf("Name of Directory: %s\n", headerFile.name);
             mode = strtol(headerFile.mode, &buf3, OCT);
             mkdir(headerFile.name, mode);
             chown(headerFile.name, strtol(headerFile.uid, &strbuff, OCT), strtol(headerFile.gid, &strbuff, OCT));
             setTime(headerFile.name, strtol(headerFile.mtime, &strbuff, OCT));
-            chdir(headerFile.name);
+            //chdir(headerFile.name);
         }
-        if(*(headerFile.typeflag) != DIRECTORY && *(headerFile.typeflag) != NULL){
+        if(*(headerFile.typeflag) != DIRECTORY && *(headerFile.typeflag) != NULL && *(headerFile.typeflag) != 'L'){
             fileSize = strtol(headerFile.size, &buf3, OCT);
             buf = calloc(fileSize, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
