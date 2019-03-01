@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <limits.h>
-#include "tarcreate.h"
+#include "tarutil.h"
 
 int main(int argc, char *argv[]) {
     int c,x,t,v,s;
@@ -13,8 +13,8 @@ int main(int argc, char *argv[]) {
     int i;
 
     if(argc <= 1) {
-        printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
-        exit(-1);
+        fprintf(stderr,"Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
+        exit(EXIT_FAILURE);
     }
 
     getcwd(cwd,PATH_MAX);
@@ -36,6 +36,11 @@ int main(int argc, char *argv[]) {
         s=1;
     }
 
+    if(!(c||x||v)) {
+        printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
+        exit(EXIT_FAILURE);
+    }
+
     if(c) {
         tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
         for(i = 3; i < argc; i++) {
@@ -48,6 +53,10 @@ int main(int argc, char *argv[]) {
         write(tarfd,block,512);
 
         close(tarfd);
+    } else if(x) {
+        for(i = 2; i < argc; i++) {
+            extract(argv[i]);
+        }
     }
 
 }

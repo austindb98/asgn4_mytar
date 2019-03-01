@@ -124,7 +124,6 @@ int addtoarchive(char *path, int fd) {
     write(fd,fileheader,512);
     printf("Wrote header to file\n");
 
-
     if(!strncmp(fileheader->typeflag, "5", 1)) {
         printf("File is directory\n");
 
@@ -141,7 +140,9 @@ int addtoarchive(char *path, int fd) {
 
             if(current_dirent->d_ino != self.st_ino
                     && current_dirent->d_ino != parent.st_ino) {
+
                 char *new_path = calloc(1,257);
+                
                 if((strlen(path)+strlen(current_dirent->d_name)) < 255) {
                     strncpy(new_path,path,strlen(path));
                     strcat(new_path,"/");

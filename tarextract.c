@@ -7,6 +7,7 @@
 #include <utime.h>
 #include <string.h>
 #include "tarheader.h"
+#include "tarutil.h"
 
 #define DIRECTORY '5'
 #define OCT 8
@@ -73,15 +74,13 @@ char *makepath(header *fileheader) {
 
 int setTime(char *fileName, time_t mtime) {
     struct utimbuf tmp;
-
     tmp.actime = 0;
     tmp.modtime = mtime;
     utime(fileName, &tmp);
-
     return 0;
 }
 
-int Extract(char *fileName) {
+int extract(char *fileName) {
     int fdTar;
      fdTar = open(fileName, O_RDONLY);
 
@@ -89,6 +88,7 @@ int Extract(char *fileName) {
         perror("extract");
         return -1;
     }
+
     int len, size, mode, fdFile;
     uint8_t fileSize;
     header headerFile;
@@ -99,39 +99,41 @@ int Extract(char *fileName) {
     char * path;
     /*directory check*/
     while((size = read(fdTar, &headerFile, 512)) != 0) {
-
         /*directory check*/
-        if((headerFile.name[0] != '\0') 
-                && (*(headerFile.typeflag) == DIRECTORY) 
+        if((headerFile.name[0] != '\0')
+                && (*(headerFile.typeflag) == DIRECTORY)
                 && (*(headerFile.typeflag) != 'L')) {
 
             path = makepath(&headerFile.name);
             printf("Name of Directory: %s\n", path);
             mode = strtol(headerFile.mode, &buf3, OCT);
             mkdir(path, mode);
-            chown(path, strtol(headerFile.uid, &strbuff, OCT), 
+            chown(path, strtol(headerFile.uid, &strbuff, OCT),
             strtol(headerFile.gid, &strbuff, OCT));
             setTime(path, strtol(headerFile.mtime, &strbuff, OCT));
             //chdir(headerFile.name);
         }
-        if(*(headerFile.typeflag) != DIRECTORY 
-                && *(headerFile.typeflag) != '\0' 
-                && *(headerFile.typeflag) != 'L'){
-        
+
+        if(*(headerFile.typeflag) != DIRECTORY
+                && *(headerFile.typeflag) != '\0'
+                && *(headerFile.typeflag) != 'L') {
+
             fileSize = strtol(headerFile.size, &buf3, OCT);
             buf = calloc(512, sizeof(char));
             mode = strtol(headerFile.mode, &buf3, OCT);
             size = read(fdTar, buf, 512);
             path = makepath(&headerFile.name);
             fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, 0644);
-            if(fdFile < 0){
+
+            if(fdFile < 0) {
                 fprintf(stderr, "cannot open file %s",path);
                 perror("");
                 exit(EXIT_FAILURE);
             }
+
             size = write(fdFile, buf, fileSize);
 
-            if(size != fileSize){
+            if(size != fileSize) {
                 perror("error in writing file");
             }
 
@@ -140,19 +142,10 @@ int Extract(char *fileName) {
             modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
             modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
             utime(path, &modTime);
-            }
-
         }
+    }
     /*non-directory checks*/
-
 
     close(fdTar);
     return 0;
-
-}
-
-/*temp main im using for testing*/
-void main(int argc, char *argv[]) {
-    int x = Extract(argv[1]);
-    printf("%d\n", x);
 }
