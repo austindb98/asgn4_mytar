@@ -178,7 +178,7 @@ int extract(char *archivename) {
 
     /*directory check*/
     while(read(fdTar, &fileheader, 512) == 512) {
-        printheader(&fileheader);
+        //printheader(&fileheader);
         if(isheadernull(&fileheader)) {
             printf("--- Current header null ---\n");
             if(pastheadernull) {
@@ -224,9 +224,9 @@ int extract(char *archivename) {
 
             buf = calloc(513, sizeof(char));
 
-            printf("File size: %dB\n", bytes);
+            //printf("File size: %dB\n", bytes);
             for(;bytes>=512;bytes-=512) {
-                printf("bytes left: %dB\n", bytes);
+                //printf("bytes left: %dB\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
@@ -237,7 +237,7 @@ int extract(char *archivename) {
                 }
             }
             if(bytes) {
-                printf("bytes left (last pull): %dB\n", bytes);
+                //printf("bytes left (last pull): %dB\n", bytes);
                 if(read(fdTar, buf, 512)!=512) {
                     perror("read");
                     exit(EXIT_FAILURE);
