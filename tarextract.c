@@ -9,6 +9,7 @@
 #include "tarheader.h"
 
 #define DIRECTORY '5'
+#define OCT '8'
 
 static void makedir(const char *dir, mode_t mode) {
     char tmp[256];
@@ -50,65 +51,58 @@ int getLen(int x) {
 }
 
 int Extract(char *fileName) {
-    FILE* tar = fopen(fileName, "r");
+    int fdTar;
+     fdTar = open(fileName, O_RDONLY);
 
-    if(tar == NULL) {
+    if(fdTar < 0) {
         perror("extract");
         return -1;
     }
+    int len, size, mode, fdFile;
+    ssize_t fileSize;
+    Header header;
+    char *strbuff, *buf, *buf3;
+    struct utimbuf modTime;
 
-    int len;
-    fseek(tar, 0, SEEK_END);
-    len = ftell(tar);
-    fseek(tar, 0, SEEK_SET);
-    header header;
     /*directory check*/
-    while(ftell(tar) < len) {
-        fread(&header, sizeof(header), 1, tar);
+    while((size = read(fdTar, &header, sizeof(Header))) != 0) {
 
-        if((header.name[0] != '\0') && (header.typeflag == '5')) {
+        /*directory check*/
+        if((header.name[0] != '\0') && (*(header.typeflag) == DIRECTORY)) {
             printf("Name of Directory: %s\n", header.name);
-            makedir(header.name, atoi(header.mode));
-            chown(header.name, atoi(header.uid), atoi(header.gid));
-            setTime(header.name, atoi(header.mtime));
+            mode = strtol(header.mode, &buf3, OCT);
+            mkdir(header.name, mode);
+            chown(header.name, strtol(header.uid, &strbuff, OCT), strtol(header.gid, &strbuff, OCT));
+            setTime(header.name, strtol(header.mtime, &strbuff, OCT));
         }
 
-        if(header.typeflag != '5') {
-            int length = atoi(header.size) + getLen(atoi(header.size));
-            fseek(tar, length, SEEK_CUR);
+        fileSize = strtol(header.size, &buf3, OCT);
+        buf = calloc(fileSize, sizeof(char));
+        mode = strtol(header.mode, &buf3, OCT);
+        size = read(fdTar, buf, fileSize);
+
+        fdFile = open(header.name,O_CREAT | O_TRUNC | O_WRONLY, mode);
+        if(fdFile < 0){
+            perror("cannot open file");
+            exit(EXIT_FAILURE);
         }
+        size = write(fdFile, buf, fileSize);
+
+        if(size != fileSize){
+            perror("error in writing file");
+        }
+        free(buf);
+        close(fdFile);
+        modTime.modtime = strtol(header.mtime, &buf3, OCT);
+        modTime.actime = strtol(header.mtime, &buf3, OCT);
+        utime(header.name, &modTime);
+
 
     }
     /*non-directory checks*/
-    fseek(tar, 0, SEEK_SET);
-    while(ftell(tar) < len) {
-        fread(&header, sizeof(header), 1, tar);
-        if((header.name[0] != '2') && (header.typeflag != '5')){
-            FILE* temp = open(header.name,O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC);
-            if(temp == NULL){
-                perror("Could not open file");
-                return -1;
-            }
-            int c;
-            int length = atoi(header.size);
-            /*not currently working ignore*/
-            int cpt = 0;
-            while(cpt < 1) {
-                c = fgetc(tar);
-                fputc(c, temp);
-                cpt++;
-            }
-            fseek(tar, -1, SEEK_CUR);
-            fclose(temp);
-
-
-        }
-        if(header.typeflag == '2') {
-            int length = atoi(header.size) + getLen(atoi(header.size));
-            fseek(tar, length, SEEK_CUR);
-        }
-    }
-    fclose(tar);
+    
+  
+    close(fdTar);
     return 0;
 
 }
