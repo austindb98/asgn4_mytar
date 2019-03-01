@@ -164,7 +164,7 @@ int extract(char *archivename) {
                 && *(fileheader.typeflag) != '\0'
                 && *(fileheader.typeflag) == 'L') {
 
-            symlink(path,fileheader.linkname);
+            symlink(fileheader.linkname,path);
         }
     }
 
