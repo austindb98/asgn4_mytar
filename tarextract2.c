@@ -112,9 +112,9 @@ int extract(char *archivename) {
     /*directory check*/
     while(read(fdTar, &fileheader, 512) == 512) {
 
-        if(validateheader(&fileheader)) {
+        /*if(validateheader(&fileheader)) {
             fprintf(stderr, "---BAD HEADER---\n");
-        }
+        }*/
         /*directory check*/
         if(fileheader.name[0] != '\0'
                 && (*(fileheader.typeflag) == DIRECTORY)
