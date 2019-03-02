@@ -9,9 +9,9 @@
 #include "tarheader.h"
 #include "tarutil.h"
 #include <time.h>
+
 #define S_IFMT 0160000 /* type of file: */
 #define S_IFDIR 0040000 /* directory */
-
 
 #define DIRECTORY '5'
 #define OCT 8
@@ -32,32 +32,34 @@ void tarlist(char *filename, char **targets, int numtargets){
     }
     int len, size, mode, fdFile, i;
     uint8_t fileSize;
-    header headerFile;
+    header fileheader;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
-    char * path;
-    while((size = read(fdTar, &headerFile, 512)) != 0) {
-        /*if targets check*/
+    char *path;
+    while((size = read(fdTar, &fileheader, 512)) != 0) {
         int targetflag = targets?0:1;
-        path = makepath(&headerFile);
+        path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
             if(!strcmp(path,targets[i])) {
                 targetflag = 1;
             }
         }
+
         if(targetflag == 1){
-            if((headerFile.name[0] != '\0')
-                    && (*(headerFile.typeflag) != 'L')) {
+            if(fileheader.name[0] != '\0'
+                    &&  fileheader.typeflag[0] != 'L'
+                    && (fileheader.typeflag[0] == '0'
+                    ||  fileheader.typeflag[0] == '\0'
+                    ||  fileheader.typeflag[0] == DIRECTORY)) {
 
-                if((headerFile.typeflag[0] == '0')
-                        || (headerFile.typeflag[0] == DIRECTORY)){
-
-                    path = makepath(&headerFile.name);
-                    printf("%s\n", path);
-                }
+                path = makepath(&fileheader.name);
+                printf("%s\n", path);
+                skiptonextheader(&fileheader,fdTar);
             }
-
+        } else {
+            skiptonextheader(&fileheader,fdTar);
         }
+
     }
     close(fdTar);
 }
@@ -81,59 +83,65 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     }
     int len, size, mode, fdFile, i;
     uint8_t fileSize;
-    header headerFile;
+    header fileheader;
     permChar *pChar;
-    char *timebuf[80];
+    char timebuf[80];
     char  *buf;
     char permStr[11], *timeStr;
     time_t mtime;
     char * path;
     struct tm *info;
-    while((size = read(fdTar, &headerFile, 512)) != 0) {
+
+    while((size = read(fdTar, &fileheader, 512)) != 0) {
 
         /*if targets check*/
         int targetflag = targets?0:1;
-        path = makepath(&headerFile);
+        path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
             if(!strcmp(path,targets[i])) {
                 targetflag = 1;
             }
         }
+
         if(targetflag == 1){
+            if(fileheader.name[0] != '\0'
+                    &&  fileheader.typeflag[0] != 'L'
+                    && (fileheader.typeflag[0] == '0'
+                    ||  fileheader.typeflag[0] == '\0'
+                    ||  fileheader.typeflag[0] == DIRECTORY)) {
 
-            if((headerFile.name[0] != '\0')
-                    && (*(headerFile.typeflag) != 'L')) {
-
-                if((headerFile.typeflag[0] == '0')
-                        || (headerFile.typeflag[0] == DIRECTORY)){
-
-                mode = strtol(headerFile.mode, &buf, OCT);
-                for(i = 0; i < 10; i++){
+                mode = strtol(fileheader.mode, &buf, OCT);
+                for(i = 0; i < 10; i++) {
                     permStr[i] = '-';
                 }
                 permStr[i] = 0;
 
                 for(pChar = PERMCHARS; pChar->flag; pChar++){
                     if(pChar -> flag == 16384){
-                        if(*headerFile.typeflag == DIRECTORY){
+                        if(*fileheader.typeflag == DIRECTORY){
                             permStr[pChar->index] = pChar -> val;
                         }
                     }else if(mode & pChar -> flag){
                         permStr[pChar->index] = pChar -> val;
                     }
                 }
-                mtime = strtol(headerFile.mtime, &buf, OCT);
+
+                mtime = strtol(fileheader.mtime, &buf, OCT);
                 info = localtime(&mtime);
                 strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
-                path = makepath(&headerFile.name);
-                size = strtol(headerFile.size, &buf, OCT);
-                printf("%s %s/%s %9u %s %s\n", permStr,
-                        headerFile.uname, headerFile.gname,
-                        size, timebuf, path);
-              }
-            }
+                path = makepath(&fileheader.name);
+                size = strtol(fileheader.size, &buf, OCT);
 
+                printf("%s %s/%s %9u %s %s\n", permStr,
+                        fileheader.uname, fileheader.gname,
+                        size, timebuf, path);
+
+                skiptonextheader(&fileheader,fdTar);
+            }
+        } else {
+            skiptonextheader(&fileheader,fdTar);
         }
+
     }
 
     close(fdTar);
