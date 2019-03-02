@@ -63,7 +63,7 @@ int extract(char *archivename, char **targets, int numtargets) {
             /* If directory */
             if(fileheader.name[0] != '\0'
                     && (*(fileheader.typeflag) == DIRECTORY)
-                    && (*(fileheader.typeflag) != 'L')) {
+                    && (*(fileheader.typeflag) != '2')) {
 
                 //printf("Name of Directory: %s\n", path);
                 mode = strtol(fileheader.mode, &buf3, OCT);
@@ -74,8 +74,7 @@ int extract(char *archivename, char **targets, int numtargets) {
 
             /*If regular file*/
             } else if(fileheader.typeflag[0] != DIRECTORY
-                    && *(fileheader.typeflag) != '\0'
-                    && *(fileheader.typeflag) != 'L') {
+                    && *(fileheader.typeflag) != '\0'){
 
                 path = makepath(&fileheader);
                 mode = strtol(fileheader.mode, &buf3, OCT);
