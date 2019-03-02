@@ -1,5 +1,8 @@
 #include "tarutil.h"
 #include "tarheader.h"
+#include <string.h>
+#include <stdlib.h>
+
 
 char *makepath(header *fileheader) {
     char *out = calloc(1,256);
