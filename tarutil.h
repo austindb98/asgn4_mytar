@@ -1,3 +1,5 @@
+#ifndef UTIL
+#define UTIL
 #include <sys/types.h>
 #include <string.h>
 #include <stdio.h>
@@ -6,8 +8,7 @@
 #include <sys/stat.h>
 #include "tarheader.h"
 
-#ifndef UTIL
-#define UTIL
+
 int addtoarchive(char *path, int fd);
 int extract(char *path, char **targets, int numtargets);
 void tarlist(char *filename, char **targets, int numtargets);
