@@ -22,30 +22,13 @@ typedef struct {
     int val;
 }permChar;
 
-
-/*
-char *makepath(header *fileheader) {
-    if(*(fileheader->prefix)) {
-        char *out = calloc(1,256);
-        strncpy(out,fileheader->prefix,155);
-        strncat(out,"/",1);
-        strncat(out,fileheader->name,100);
-        return out;
-    } else {
-        return fileheader->name;
-    }
-}
-*/
-
-
-
 void tarlist(char *filename, char **targets, int numtargets){
     int fdTar;
      fdTar = open(filename, O_RDONLY);
 
     if(fdTar < 0) {
         perror("listing");
-        return -1;
+        exit(-1);
     }
     int len, size, mode, fdFile, i;
     uint8_t fileSize;
@@ -63,39 +46,38 @@ void tarlist(char *filename, char **targets, int numtargets){
             }
         }
         if(targetflag == 1){
-            if((headerFile.name[0] != '\0')  
+            if((headerFile.name[0] != '\0')
                     && (*(headerFile.typeflag) != 'L')) {
 
-                if((headerFile.typeflag[0] == '0') 
+                if((headerFile.typeflag[0] == '0')
                         || (headerFile.typeflag[0] == DIRECTORY)){
-                path = makepath(&headerFile.name);
-                printf("%s\n", path);
-              }   
+
+                    path = makepath(&headerFile.name);
+                    printf("%s\n", path);
+                }
             }
-        
-        }
-        }
 
+        }
+    }
     close(fdTar);
-
 }
 
 void tarlistVerbose(char *filename, char **targets, int numtargets){
     int fdTar;
      fdTar = open(filename, O_RDONLY);
 
-   static permChar PERMCHARS[] = {
-   {S_IRUSR, 1, 'r'}, {S_IWUSR, 2, 'w'}, {S_IXUSR, 3, 'x'},
-   {S_IRGRP, 4, 'r'}, {S_IWGRP, 5, 'w'}, {S_IXGRP, 6, 'x'},
-   {S_IROTH, 7, 'r'}, {S_IWOTH, 8, 'w'}, {S_IXOTH, 9, 'x'},
-   {S_ISUID, 3, 's'}, {S_ISGID, 6, 's'}, {S_IFDIR, 0, 'd'},
-   {0, 0, 0}
+    static permChar PERMCHARS[] = {
+    {S_IRUSR, 1, 'r'}, {S_IWUSR, 2, 'w'}, {S_IXUSR, 3, 'x'},
+    {S_IRGRP, 4, 'r'}, {S_IWGRP, 5, 'w'}, {S_IXGRP, 6, 'x'},
+    {S_IROTH, 7, 'r'}, {S_IWOTH, 8, 'w'}, {S_IXOTH, 9, 'x'},
+    {S_ISUID, 3, 's'}, {S_ISGID, 6, 's'}, {S_IFDIR, 0, 'd'},
+    {0, 0, 0}
 };
 
 
     if(fdTar < 0) {
         perror("listing");
-        return -1;
+        exit(-1);
     }
     int len, size, mode, fdFile, i;
     uint8_t fileSize;
@@ -119,15 +101,15 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
         }
         if(targetflag == 1){
 
-            if((headerFile.name[0] != '\0')  
+            if((headerFile.name[0] != '\0')
                     && (*(headerFile.typeflag) != 'L')) {
 
-                if((headerFile.typeflag[0] == '0') 
+                if((headerFile.typeflag[0] == '0')
                         || (headerFile.typeflag[0] == DIRECTORY)){
-                
+
                 mode = strtol(headerFile.mode, &buf, OCT);
                 for(i = 0; i < 10; i++){
-                    permStr[i] = '-';    
+                    permStr[i] = '-';
                 }
                 permStr[i] = 0;
 
@@ -145,12 +127,11 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                 strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
                 path = makepath(&headerFile.name);
                 size = strtol(headerFile.size, &buf, OCT);
-                printf("%s %s/%s %9u %s %s\n", permStr, 
+                printf("%s %s/%s %9u %s %s\n", permStr,
                         headerFile.uname, headerFile.gname,
                         size, timebuf, path);
-              }   
+              }
             }
-        
 
         }
     }
@@ -158,4 +139,3 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     close(fdTar);
 
 }
-

@@ -119,7 +119,7 @@ int isheadernull(header *tarheader) {
     return 1;
 }
 
-int validateheader(header *tarheader) {
+/*int validateheader(header *tarheader) {
     header cpy;
     int i,sum=0;
     char *strsum = calloc(1,8);
@@ -130,7 +130,7 @@ int validateheader(header *tarheader) {
     }
     snprintf(strsum, 8, "%0*o", 7, sum);
     return strncmp(strsum,tarheader->chksum,8);
-}
+}*/
 
 int setTime(char *filename, time_t mtime) {
     struct utimbuf tmp;
