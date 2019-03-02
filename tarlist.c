@@ -141,12 +141,11 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                     }
                 }
                 mtime = strtol(headerFile.mtime, &buf, OCT);
-                time(&mtime);
                 info = localtime(&mtime);
                 strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
                 path = makepath(&headerFile.name);
                 size = strtol(headerFile.size, &buf, OCT);
-                printf("%s %s %s %9u %s %s\n", permStr, 
+                printf("%s %s/%s %9u %s %s\n", permStr, 
                         headerFile.uname, headerFile.gname,
                         size, timebuf, path);
               }   
