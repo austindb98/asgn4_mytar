@@ -74,7 +74,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     {S_IROTH, 7, 'r'}, {S_IWOTH, 8, 'w'}, {S_IXOTH, 9, 'x'},
     {S_ISUID, 3, 's'}, {S_ISGID, 6, 's'}, {S_IFDIR, 0, 'd'},
     {0, 0, 0}
-};
+    };
 
 
     if(fdTar < 0) {
