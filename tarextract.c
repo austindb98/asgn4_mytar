@@ -115,10 +115,12 @@ int extract(char *archivename, char **targets, int numtargets) {
             if(strlen(path) == strlen(targets[i])) {
                 int length = strlen(path);
                 if(strlen(targets[i]) < length) {
+                    fprintf(stderr, "Comparing over length of target\n");
                     length = strlen(targets[i]);
+                } else {
+                    fprintf(stderr, "Comparing over length of path\n");
                 }
                 targetflag = !strncmp(path,targets[i],length);
-                fprintf(stderr,"\n");
             } else {
                 fprintf(stderr,"Length: %d \tPath: %s\n",strlen(path),path);
                 fprintf(stderr,"Length: %d \tTarget: %s\n\n",
