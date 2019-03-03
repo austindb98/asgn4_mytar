@@ -67,8 +67,10 @@ header *buildheader(char *path) {
             name_ptr = strchr(name_ptr,'/')+1;
         }
         strncpy(out->name, name_ptr, strlen(name_ptr));
+
         if((filestat.st_mode & S_IFMT) == S_IFDIR) {
             out->name[strlen(out->name)] = '/';
+            printf("%s\n", out->name);
             //strcat(out->name, "/");
         }
     }
