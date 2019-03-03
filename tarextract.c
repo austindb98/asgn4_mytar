@@ -92,6 +92,9 @@ int extract(char *archivename, char **targets, int numtargets) {
                     if(targetflag) {
                         fprintf(stderr, "%s equals %s\n\n",path,targets[i]);
                     }
+                } else if(strlen(targetendptr) <= 1){
+                    fprintf(stderr,"only &s after end ptr", targetendptr);
+                    targetflag = 1;
                 } else {
                     fprintf(stderr,"length not equal\n\n");
                     targetflag = 0;
