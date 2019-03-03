@@ -158,20 +158,14 @@ int validateheader(header *fileheader) {
     fprintf(stderr,"Calculated sum: %s\n", newsumstr);
 
     int out;
-    if(chksum[0] != '0') {
+    /*if(chksum[0] != '0') {
         out = 0;
     }
     if(strlen(chksum) == 0 ){
-
-    } else {
+*/
+    //} else {
         //out = strstr(newsumstr,chksum)?1:0;
         out = !strncmp(newsumstr,chksum,8)
-    }
-    /*if(out == 0) {
-        printheader(fileheader);
-        fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
-        fprintf(stdout,"Calculated sum: %s\n", newsumstr);
-    }*/
-
+    //}
     return out;
 }
