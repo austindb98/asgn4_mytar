@@ -113,18 +113,19 @@ int extract(char *archivename, char **targets, int numtargets) {
                 fprintf(stderr, "%s does not equal %s\n\n",path,targets[i]);
             }*/
             if(strlen(path) == strlen(targets[i])) {
+                targetflag = !strcmp(path,targets[i]);
+            } else {
+                fprintf(stderr,"Length: %d \tPath: %s\n",strlen(path),path);
+                fprintf(stderr,"Length: %d \tTarget: %s\n\n",
+                        strlen(targets[i]),targets[i]);
                 int length = strlen(path);
                 if(strlen(targets[i]) < length) {
                     fprintf(stderr, "Comparing over length of target\n");
                     length = strlen(targets[i]);
                 } else {
                     fprintf(stderr, "Comparing over length of path\n");
+                    targetflag = !strcmp(path,targets[i]);
                 }
-                targetflag = !strncmp(path,targets[i],length);
-            } else {
-                fprintf(stderr,"Length: %d \tPath: %s\n",strlen(path),path);
-                fprintf(stderr,"Length: %d \tTarget: %s\n\n",
-                        strlen(targets[i]),targets[i]);
             }
         }
 
