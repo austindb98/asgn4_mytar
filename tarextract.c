@@ -53,9 +53,16 @@ int extract(char *archivename, char **targets, int numtargets) {
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            if(!strncmp(path, targets[i], strlen(targets[i]))) {
-                targetflag = 1;
-            }
+            if(strlen(path) < strlen(targets[i])){
+                if(!strncmp(path, targets[i], strlen(path))){
+                    targetflag = 1;
+                }
+            }else{
+                if(!strncmp(path, targets[i], strlen(targets[i]))){
+                    targetflag = 1;
+                }
+
+        }
         }
 
         /*If we need this file*/
