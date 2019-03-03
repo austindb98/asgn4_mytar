@@ -12,210 +12,140 @@
 #define DIRECTORY '5'
 #define OCT 8
 
-int setTime(char *filename, time_t mtime) {
+char *dirtok(char *path) {
+    char *end;
+    char *new_path;
+    new_path = calloc(1,strlen(path));
+    end = strrchr(path,'/');
+    if((end != NULL)) {
+        strncpy(new_path,path, end-path);
+        printf("Changing to %s\n", new_path);
+        chdir(new_path);
+        return end;
+    } else {
+        printf("Remaining in %s\n", path);
+        return path;
+    }
+}
+
+void makedir(char *path, mode_t mode) {
+    path[strlen(path)-1] = 0;
+    char * newPath;
+    newPath = dirtok(path);
+    if(strcmp(newPath, path) == 0){
+        mkdir(path, mode);
+        chdir(path);
+    }else{
+        mkdir(newPath, mode);
+    }
+}
+
+char *makepath(header *fileheader) {
+    if(*(fileheader->prefix)) {
+        char *out = calloc(1,256);
+        strncpy(out,fileheader->prefix,155);
+        strcat(out,"/");
+        strncat(out,fileheader->name,100);
+        return out;
+    } else {
+        return fileheader->name;
+    }
+}
+
+
+/*
+    char tmp[256];
+    char *x = NULL;
+    size_t len;
+    snprintf(tmp, sizeof(tmp), "%s", dir);
+    len = strlen(tmp);
+    if(tmp[len - 1] == '/'){
+        tmp[len - 1] = 0;
+    }
+    for(x = tmp + 1; *x; x++){
+        if(*x == '/'){
+            *x = 0;
+            mkdir(tmp, mode);
+            *x = '/';
+        }
+    }
+    mkdir(tmp,mode);
+*/
+
+int setTime(char *fileName, time_t mtime) {
     struct utimbuf tmp;
     tmp.actime = 0;
     tmp.modtime = mtime;
-    utime(filename, &tmp);
+    utime(fileName, &tmp);
     return 0;
 }
 
-int extract(char *archivename, char **targets, int numtargets) {
+int extract(char *fileName) {
     int fdTar;
-     fdTar = open(archivename, O_RDONLY);
+     fdTar = open(fileName, O_RDONLY);
 
     if(fdTar < 0) {
         perror("extract");
         return -1;
     }
 
-    int mode, fdFile;
-    header fileheader;
+    int len, size, mode, fdFile;
+    uint8_t fileSize;
+    header headerFile;
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
+    //buf3 = malloc(512);
+    //strbuff = malloc(512);
     char * path;
-    int i;
-    int pastheadernull = 0;
+    /*directory check*/
+    while((size = read(fdTar, &headerFile, 512)) != 0) {
+        /*directory check*/
+        if((headerFile.name[0] != '\0')
+                && (*(headerFile.typeflag) == DIRECTORY)
+                && (*(headerFile.typeflag) != 'L')) {
 
-
-    while(read(fdTar, &fileheader, 512) == 512) {
-        /*null block check*/
-        if(isheadernull(&fileheader)) {
-            //printf("--- Current header null ---\n");
-            if(pastheadernull) {
-            //    printf("-     BREAKING     -\n");
-                break;
-            }
-        }
-        pastheadernull = isheadernull(&fileheader);
-
-        /*if targets check*/
-        int targetflag = targets?0:1;
-        path = makepath(&fileheader);
-        fprintf(stderr,"Looking for: %s\n", path);
-        for(i =0; i < numtargets; i++) {
-            /*char *lastslashTarget = strrchr(targets[i], '/');
-            char *lastslashPath = strrchr(targets[i], '/');
-            printf("T: %d",strlen(lastslashTarget));
-            printf("P: %d", strlen(lastslashPath));
-            if((strlen(path) <
-              (strlen(targets[i])) - strlen(lastslashTarget))){
-
-                if(!strncmp(path, targets[i], strlen(path))){
-                    targetflag = 1;
-                }
-            }else if((strlen(path) - strlen(lastslashPath)) ==
-                    (strlen(targets[i]) - (strlen(lastslashTarget)))){
-
-                if(!strncmp(lastslashTarget, lastslashPath,
-                    strlen(lastslashTarget))){
-                    targetflag = 1;
-                }
-            }else{
-                if(!strncmp(path, targets[i], strlen(targets[i]))){
-                    targetflag = 1;
-                }
-            */
-            char *targetendptr,*pathendptr;
-            targetendptr = strrchr(targets[i],'/');
-            pathendptr = strrchr(path,'/');
-            /*targetflag = !strncmp(path,targets[i],
-                targetendptr&&pathendptr?
-                        targetendptr-targets[i]:strlen(targets[i]));
-
-            if(targetflag && targetendptr && pathendptr) {
-                fprintf(stderr,"prefix equal\n");
-                if(strlen(pathendptr)==strlen(targetendptr)){
-                    fprintf(stderr,"length equal\n");
-                    targetflag = !strncmp(pathendptr,
-                            targetendptr,strlen(targetendptr));
-                    if(targetflag) {
-                        fprintf(stderr, "%s equals %s\n\n",path,targets[i]);
-                    }
-                } else if(strlen(targetendptr) <= 1 || strlen(pathendptr) <=1){
-                    fprintf(stderr,"only &s after end ptr\n\n", targetendptr);
-                    targetflag = 1;
-                } else {
-                    fprintf(stderr, "length of target: %d\n",
-                        strlen(targetendptr));
-                    fprintf(stderr, "length of path: %d\n", strlen(pathendptr));
-                    fprintf(stderr,"length not equal\n\n");
-                    targetflag = 0;
-                }
-            } else if(!targetflag) {
-                if(strlen(targetendptr) <= 1){
-                    fprintf(stderr,"only &s after end ptr\n\n", targetendptr);
-                    targetflag = 1;
-                } else {
-                    targetflag = !strncmp(path,targets[i],strlen(path));
-                }
-            } else {
-                fprintf(stderr, "%s does not equal %s\n\n",path,targets[i]);
-            }*/
-            if(strlen(path) == strlen(targets[i])) {
-                targetflag = !strcmp(path,targets[i]);
-            } else {
-                fprintf(stderr,"Length: %d \tPath: %s\n",strlen(path),path);
-                fprintf(stderr,"Length: %d \tTarget: %s\n",
-                        strlen(targets[i]),targets[i]);
-                int length = strlen(path);
-                if(strlen(targets[i]) < length) {
-                    fprintf(stderr, "Comparing over length of target\n");
-                    length = strlen(targets[i]);
-                } else {
-                    fprintf(stderr, "Comparing over length of path\n");
-                    targetflag = !strcmp(path,targets[i]);
-                }
-                targetflag = !strncmp(path,targets[i],length);
-                fprintf(stderr,"%d\n", targetflag);
-            }
+            path = makepath(&headerFile);
+            printf("Name of Directory: %s\n", path);
+            mode = strtol(headerFile.mode, &buf3, OCT);
+            mkdir(path, mode);
+            chown(path, strtol(headerFile.uid, &strbuff, OCT),
+            strtol(headerFile.gid, &strbuff, OCT));
+            setTime(path, strtol(headerFile.mtime, &strbuff, OCT));
+            //chdir(headerFile.name);
         }
 
+        if(*(headerFile.typeflag) != DIRECTORY
+                && *(headerFile.typeflag) != '\0'
+                && *(headerFile.typeflag) != 'L') {
 
+            fileSize = strtol(headerFile.size, &buf3, OCT);
+            buf = calloc(512, sizeof(char));
+            mode = strtol(headerFile.mode, &buf3, OCT);
+            size = read(fdTar, buf, 512);
+            path = makepath(&headerFile);
+            fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
-        /*If we need this file*/
-        if(targetflag) {
-            /* If directory */
-            if(fileheader.name[0] != '\0'
-                    && (*(fileheader.typeflag) == DIRECTORY)
-                    && (*(fileheader.typeflag) != '2')) {
-
-                //printf("Name of Directory: %s\n", path);
-                mode = strtol(fileheader.mode, &buf3, OCT);
-                mkdir(path, mode);
-                fprintf(stderr, "Making directory: %s\n\n",path);
-                chown(path, strtol(fileheader.uid, &strbuff, OCT),
-                strtol(fileheader.gid, &strbuff, OCT));
-                setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
-
-            /*If regular file*/
-            } else if(fileheader.typeflag[0] != DIRECTORY
-                    && *(fileheader.typeflag) != '\0'
-                    && *(fileheader.typeflag) != '2'){
-
-                path = makepath(&fileheader);
-                mode = strtol(fileheader.mode, &buf3, OCT);
-                fdFile = open(path,O_WRONLY|O_CREAT|O_TRUNC, mode);
-
-                if(fdFile < 0) {
-                    fprintf(stderr, "Cannot open file %s:", path);
-                    perror("");
-                    exit(EXIT_FAILURE);
-                }
-
-                int bytes;
-                bytes = strtol(fileheader.size, &buf3, OCT);
-                buf = calloc(513, sizeof(char));
-
-                /*Copy file to output*/
-                for(;bytes>=512;bytes-=512) {
-                    if(read(fdTar, buf, 512)!=512) {
-                        perror("read");
-                        exit(EXIT_FAILURE);
-                    }
-                    if(write(fdFile, buf, 512)!=512) {
-                        perror("write");
-                        exit(EXIT_FAILURE);
-                    }
-                }
-                if(bytes) {
-                    if(read(fdTar, buf, 512)!=512) {
-                        perror("read");
-                        exit(EXIT_FAILURE);
-                    }
-                    if(write(fdFile, buf, bytes)!=bytes) {
-                        perror("write");
-                        exit(EXIT_FAILURE);
-                    }
-                }
-
-                free(buf);
-                close(fdFile);
-                modTime.modtime = strtol(fileheader.mtime, &buf3, OCT);
-                modTime.actime = strtol(fileheader.mtime, &buf3, OCT);
-                utime(path, &modTime);
-
-            /*If Link*/
-            } else if(fileheader.typeflag[0] != DIRECTORY
-                    && (*(fileheader.typeflag) == '2'
-                    || *(fileheader.typeflag) == 'L')) {
-                char *temp = calloc(1,101);
-                strncpy(temp,fileheader.linkname,100);
-                printf("Link: %s\n",temp);
-                symlink(temp,path);
-                free(temp);
+            if(fdFile < 0) {
+                fprintf(stderr, "cannot open file %s",path);
+                perror("");
+                exit(EXIT_FAILURE);
             }
-        /*These aren't the files we're looking for*/
-        } else {
-            /*Skip correct number of blocks*/
-            int bytes = strtol(fileheader.size, &buf3, OCT);
-            buf = calloc(513, sizeof(char));
 
-            skiptonextheader(&fileheader,fdTar);
+            size = write(fdFile, buf, fileSize);
+
+            if(size != fileSize) {
+                perror("error in writing file");
+            }
+
+            free(buf);
+            close(fdFile);
+            modTime.modtime = strtol(headerFile.mtime, &buf3, OCT);
+            modTime.actime = strtol(headerFile.mtime, &buf3, OCT);
+            utime(path, &modTime);
         }
     }
+    /*non-directory checks*/
 
     close(fdTar);
     return 0;
-
 }
