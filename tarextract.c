@@ -53,7 +53,7 @@ int extract(char *archivename, char **targets, int numtargets) {
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            char *lastslashTarget = strrchr(targets[i], '/');
+            /*char *lastslashTarget = strrchr(targets[i], '/');
             char *lastslashPath = strrchr(targets[i], '/');
             printf("T: %d",strlen(lastslashTarget));
             printf("P: %d", strlen(lastslashPath));
@@ -74,9 +74,22 @@ int extract(char *archivename, char **targets, int numtargets) {
                 if(!strncmp(path, targets[i], strlen(targets[i]))){
                     targetflag = 1;
                 }
+            */
+            char *targetendptr,*pathendptr;
+            targetendptr = strrchr(targets[i],'/');
+            pathendptr = strrchr(path,'/');
+            targetflag = !strncmp(path,targets[i],
+                pathendptr?pathendptr-path:strlen(path));
+            if(targetflag) {
+                if(strlen(pathendptr)==strlen(targetendptr)){
+                    targetflag = !strncmp(pathendptr,targetendptr,strlen(targetendptr));
+                } else {
+                    targetflag = 0;
+                }
+            }
+        }
 
-        }
-        }
+    
 
         /*If we need this file*/
         if(targetflag) {
@@ -94,7 +107,7 @@ int extract(char *archivename, char **targets, int numtargets) {
 
             /*If regular file*/
             } else if(fileheader.typeflag[0] != DIRECTORY
-                    && *(fileheader.typeflag) != '\0' 
+                    && *(fileheader.typeflag) != '\0'
                     && *(fileheader.typeflag) != '2'){
 
                 path = makepath(&fileheader);
