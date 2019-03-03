@@ -52,7 +52,7 @@ int extract(char *archivename, char **targets, int numtargets) {
         /*if targets check*/
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
-        printf("Looking for: %s\n" path);
+        printf("Looking for: %s\n", path);
         for(i =0; i < numtargets; i++) {
             /*char *lastslashTarget = strrchr(targets[i], '/');
             char *lastslashPath = strrchr(targets[i], '/');
