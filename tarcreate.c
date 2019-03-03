@@ -59,6 +59,7 @@ header *buildheader(char *path) {
         typeflag = "5";
     }
 
+    /*Break long names across name and prefix*/
     name_ptr = path;
     if(strlen(path) <= 100) {
         memcpy(out->name, path, strlen(path));
@@ -69,30 +70,37 @@ header *buildheader(char *path) {
         strncpy(out->name, name_ptr, strlen(name_ptr));
         strncpy(out->prefix, path, name_ptr-path-1);
     }
+    
+    /*Add / to name of directories*/
     if((filestat.st_mode & S_IFMT) == S_IFDIR) {
         out->name[strlen(out->name)] = '/';
-        //printf("%s\n", out->name);
-        //strcat(out->name, "/");
     }
 
 
     octaltoasciiset(out->mode, filestat.st_mode, 8);
     octaltoasciiset(out->uid, filestat.st_uid, 8);
-    octaltoasciiset(out->gid, filestat.st_gid, 8);
+   octaltoasciiset(out->gid, filestat.st_gid, 8);
+   
+	/*Directories have size 0*/
     if((filestat.st_mode & S_IFMT) == S_IFDIR) {
         memcpy(out->size, "0", 1);
     } else {
         octaltoasciiset(out->size, filestat.st_size, 12);
     }
+    
     octaltoasciiset(out->mtime, filestat.st_mtime, 12);
     memset(out->chksum, ' ', 8);
     memcpy(out->typeflag, typeflag, 1);
     memcpy(out->magic, "ustar", 6);
     memcpy(out->version, "00", 2);
+    
+    /*Use macros to get additional data*/
     memcpy(out->uname, getpwuid(filestat.st_uid)->pw_name, 32);
     memcpy(out->gname, getgrgid(filestat.st_gid)->gr_name, 32);
     octaltoasciiset(out->devmajor, major(filestat.st_dev), 8);
     octaltoasciiset(out->devminor, minor(filestat.st_dev), 8);
+
+    /*Pad last 12 bytes*/
     memset(out->null, '\0', 12);
 
     for(i = 0; i<512; i++) {
@@ -113,42 +121,40 @@ int addtoarchive(char *path, int fd) {
     struct stat parent;
     char *pathparent = calloc(1,strlen(path) + 4);
 
-
-    //printf("Building header for: %s\n", path);
-
     fileheader = buildheader(path);
     if(!fileheader) {
         return -1;
     }
 
     write(fd,fileheader,512);
-    //printf("Wrote header to file\n");
 
+    /*If the file is a directory*/
     if(!strncmp(fileheader->typeflag, "5", 1)) {
-        //printf("File is directory\n");
 
         current_dir = opendir(path);
         if(!current_dir) {
             return -2;
         }
 
+        /*For all file sin the directory*/
         while((current_dirent = readdir(current_dir))) {
             lstat(path, &self);
             strcpy(pathparent,path);
             strcat(pathparent,"/..");
             lstat(pathparent, &parent);
 
+            /*If not . or ..*/
             if(current_dirent->d_ino != self.st_ino
                     && current_dirent->d_ino != parent.st_ino) {
 
                 char *new_path = calloc(1,257);
 
+                /*Form new path and recurse*/
                 if((strlen(path)+strlen(current_dirent->d_name)) < 255) {
                     strncpy(new_path,path,strlen(path));
                     strcat(new_path,"/");
                     strcat(new_path, current_dirent->d_name);
 
-                    //printf("Adding to archive: %s\n", new_path);
                     addtoarchive(new_path, fd);
 
                     free(new_path);
@@ -157,17 +163,14 @@ int addtoarchive(char *path, int fd) {
                     free(new_path);
                     exit(0);
                 }
-            } else {
-                //printf("Reached %s\n", current_dirent->d_name);
             }
         }
-        //printf("Reached end of dir\n");
 
         closedir(current_dir);
     } else {
         cur_file = open(path, O_RDONLY);
         memset(buffer, '\0', 512);
-        //printf("Copying file: %s\n",path);
+
         while(read(cur_file, buffer, 512)>0) {
             write(fd, buffer, 512);
             memset(buffer, '\0', 512);
