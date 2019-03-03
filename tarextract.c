@@ -79,7 +79,7 @@ int extract(char *archivename, char **targets, int numtargets) {
             char *targetendptr,*pathendptr;
             targetendptr = strrchr(targets[i],'/');
             pathendptr = strrchr(path,'/');
-            targetflag = !strncmp(path,targets[i],
+            /*targetflag = !strncmp(path,targets[i],
                 targetendptr&&pathendptr?
                         targetendptr-targets[i]:strlen(targets[i]));
 
@@ -111,6 +111,17 @@ int extract(char *archivename, char **targets, int numtargets) {
                 }
             } else {
                 fprintf(stderr, "%s does not equal %s\n\n",path,targets[i]);
+            }*/
+            if(strlen(path) == strlen(targets[i])) {
+                int length = strlen(path);
+                if(strlen(targets[i]) < length) {
+                    length = strlen(targets[i]);
+                }
+                targetflag = !strncmp(path,targets[i],length);
+            } else {
+                fprintf(stderr,"Length: %s \tPath: %s",strlen(path),path);
+                fprintf(stderr,"Length: %s \tTarget: %s",
+                        strlen(targets[i]),targets[i]);
             }
         }
 
