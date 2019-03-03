@@ -151,11 +151,11 @@ int validateheader(header *fileheader) {
     for(i = 0; i < 512; i++) {
         newchksum += byteptr[i];
     }
-    /*
-    fprintf(stderr,"Actual sum (source): %s\n", fileheader->chksum);
+
+    //fprintf(stderr,"Actual sum (source): %s\n", fileheader->chksum);
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
-    fprintf(stderr,"Calculated sum: %s\n", newsumstr);
-    */
+    //fprintf(stderr,"Calculated sum: %s\n", newsumstr);
+
     int out;
     if(chksum[0] != '0') {
         out = 0;
