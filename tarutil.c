@@ -116,7 +116,7 @@ void skiptonextheader(header *fileheader, int fdTar) {
     int bytes = strtol(fileheader->size, NULL, 8);
     char *buf = calloc(513, sizeof(char));
 
-    printheader(fileheader);
+    //printheader(fileheader);
 
     for(;bytes>=512;bytes-=512) {
         if(read(fdTar, buf, 512)!=512) {
