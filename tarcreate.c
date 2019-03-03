@@ -73,7 +73,11 @@ header *buildheader(char *path) {
     octaltoasciiset(out->mode, filestat.st_mode, 8);
     octaltoasciiset(out->uid, filestat.st_uid, 8);
     octaltoasciiset(out->gid, filestat.st_gid, 8);
-    octaltoasciiset(out->size, filestat.st_size, 12);
+    if((filestat.st_mode & S_IFMT) == S_IFDIR) {
+        memcpy(out->size, "0", 1);
+    } else {
+        octaltoasciiset(out->size, filestat.st_size, 12);
+    }
     octaltoasciiset(out->mtime, filestat.st_mtime, 12);
     memset(out->chksum, ' ', 8);
     memcpy(out->typeflag, typeflag, 1);
