@@ -26,11 +26,11 @@ char *dirtok(char *path) {
     end = strrchr(path,'/');
     if((end != NULL)) {
         strncpy(new_path,path, end-path);
-        printf("Changing to %s\n", new_path);
+        //printf("Changing to %s\n", new_path);
         chdir(new_path);
         return end;
     } else {
-        printf("Remaining in %s\n", path);
+        //printf("Remaining in %s\n", path);
         return path;
     }
 }
@@ -158,7 +158,9 @@ int validateheader(header *fileheader) {
     //fprintf(stdout,"Calculated sum: %s\n", newsumstr);
 
     //return 1;
+    int notequal = strcspn(chksum,newsumstr);
     int out = strstr(newsumstr,chksum)?1:0;
+    fprintf(stderr, "%d\n", notequal);
     /*if(out == 0) {
         printheader(fileheader);
         fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
