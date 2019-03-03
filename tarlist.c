@@ -40,16 +40,16 @@ void tarlist(char *filename, char **targets, int numtargets){
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            if(!strcmp(path,targets[i])) {
+            if(!strncmp(path, targets[i], strlen(targets[i]))) {
                 targetflag = 1;
             }
         }
 
         if(targetflag == 1){
             if(fileheader.name[0] != '\0'
-                    &&  fileheader.typeflag[0] != 'L'
                     && (fileheader.typeflag[0] == '0'
                     ||  fileheader.typeflag[0] == '\0'
+                    ||  fileheader.typeflag[0] == '2'
                     ||  fileheader.typeflag[0] == DIRECTORY)) {
 
                 path = makepath(&fileheader.name);
@@ -73,7 +73,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     {S_IRGRP, 4, 'r'}, {S_IWGRP, 5, 'w'}, {S_IXGRP, 6, 'x'},
     {S_IROTH, 7, 'r'}, {S_IWOTH, 8, 'w'}, {S_IXOTH, 9, 'x'},
     {S_ISUID, 3, 's'}, {S_ISGID, 6, 's'}, {S_IFDIR, 0, 'd'},
-    {0, 0, 0}
+    {S_IFLNK, 0, 'l'}, {0, 0, 0}
     };
 
 
@@ -98,16 +98,16 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            if(!strcmp(path,targets[i])) {
+            if(!strncmp(path, targets[i], strlen(targets[i]))) {
                 targetflag = 1;
             }
         }
 
         if(targetflag == 1){
-            if(fileheader.name[0] != '\0'
-                    &&  fileheader.typeflag[0] != 'L'
-                    && (fileheader.typeflag[0] == '0'
+            if(fileheader.name[0] != '\0' && 
+                       (fileheader.typeflag[0] == '0'
                     ||  fileheader.typeflag[0] == '\0'
+                    ||  fileheader.typeflag[0] == '2'
                     ||  fileheader.typeflag[0] == DIRECTORY)) {
 
                 mode = strtol(fileheader.mode, &buf, OCT);
@@ -121,6 +121,11 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                         if(*fileheader.typeflag == DIRECTORY){
                             permStr[pChar->index] = pChar -> val;
                         }
+                    }else if(pChar -> flag == S_IFLNK){
+                        if(*fileheader.typeflag == '2'){
+                            permStr[pChar->index] = pChar -> val;
+                    }
+
                     }else if(mode & pChar -> flag){
                         permStr[pChar->index] = pChar -> val;
                     }

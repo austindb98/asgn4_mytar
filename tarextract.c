@@ -53,7 +53,7 @@ int extract(char *archivename, char **targets, int numtargets) {
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            if(!strcmp(path,targets[i])) {
+            if(!strncmp(path, targets[i], strlen(targets[i]))) {
                 targetflag = 1;
             }
         }
@@ -69,12 +69,13 @@ int extract(char *archivename, char **targets, int numtargets) {
                 mode = strtol(fileheader.mode, &buf3, OCT);
                 mkdir(path, mode);
                 chown(path, strtol(fileheader.uid, &strbuff, OCT),
-                        strtol(fileheader.gid, &strbuff, OCT));
+                strtol(fileheader.gid, &strbuff, OCT));
                 setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
 
             /*If regular file*/
             } else if(fileheader.typeflag[0] != DIRECTORY
-                    && *(fileheader.typeflag) != '\0'){
+                    && *(fileheader.typeflag) != '\0' 
+                    && *(fileheader.typeflag) != '2'){
 
                 path = makepath(&fileheader);
                 mode = strtol(fileheader.mode, &buf3, OCT);
