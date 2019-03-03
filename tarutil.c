@@ -165,5 +165,5 @@ int validateheader(header *fileheader) {
         fprintf(stdout,"Calculated sum: %s\n", newsumstr);
     }
 
-    return !strncmp(newsumstr,chksum,8);
+    return out;
 }
