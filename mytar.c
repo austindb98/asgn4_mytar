@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
     read(tarfd,&init,512);
-    if(!validateheader(init)){
+    if(!validateheader(&init)){
         fprintf(stderr, "invalid tar file");
         exit(EXIT_FAILURE);
     }

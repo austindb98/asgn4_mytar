@@ -130,16 +130,17 @@ void skiptonextheader(header *fileheader, int fdTar) {
     }
 }
 
-int validateheader(header fileheader) {
-    header new = fileheader;
-    int chksum = strtol(fileheader.chksum, NULL, 8);
+int validateheader(header *fileheader) {
+    header *new = fileheader;
+    int chksum = strtol(fileheader->chksum, NULL, 8);
     int newchksum = 0;
     int i;
+    uint8_t *byteptr = (void *)fileheader;
 
-    memset(new.chksum, ' ', 8);
+    memset(new->chksum, ' ', 8);
 
     for(i = 0; i < 512; i++) {
-        newchksum+=((uint8_t *)(&fileheader))[i];
+        newchksum += byteptr[i];
     }
     printf("Actual sum: %d\n", chksum);
     printf("Calculated sum: %d\n", newchksum);
