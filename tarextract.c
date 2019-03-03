@@ -93,7 +93,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                         fprintf(stderr, "%s equals %s\n\n",path,targets[i]);
                     }
                 } else if(strlen(targetendptr) <= 1){
-                    fprintf(stderr,"only &s after end ptr", targetendptr);
+                    fprintf(stderr,"only &s after end ptr\n\n", targetendptr);
                     targetflag = 1;
                 } else {
                     fprintf(stderr,"length not equal\n\n");
@@ -101,7 +101,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                 }
             } else if(!targetflag) {
                 if(strlen(targetendptr) <= 1){
-                    fprintf(stderr,"only &s after end ptr", targetendptr);
+                    fprintf(stderr,"only &s after end ptr\n\n", targetendptr);
                     targetflag = 1;
                 } else {
                     targetflag = !strncmp(path,targets[i],strlen(path));
