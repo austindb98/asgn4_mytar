@@ -52,6 +52,7 @@ int extract(char *archivename, char **targets, int numtargets) {
         /*if targets check*/
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
+        printf("Looking for: %s\n" path);
         for(i =0; i < numtargets; i++) {
             /*char *lastslashTarget = strrchr(targets[i], '/');
             char *lastslashPath = strrchr(targets[i], '/');
@@ -92,7 +93,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                         fprintf(stdout, "%s equals %s\n\n",path,targets[i]);
                     }
                 } else {
-                    fprintf(stderr,"length not equal\n");
+                    fprintf(stderr,"length not equal\n\n");
                     targetflag = 0;
                 }
             } else if(!targetflag) {
