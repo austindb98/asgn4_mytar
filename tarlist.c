@@ -57,6 +57,7 @@ void tarlist(char *filename, char **targets, int numtargets){
                     ||  fileheader.typeflag[0] == DIRECTORY)) {
 
                 path = makepath(&fileheader.name);
+                printf("%s\n", path);
                 skiptonextheader(&fileheader,fdTar);
             }
         } else {
