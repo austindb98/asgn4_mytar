@@ -16,16 +16,19 @@
 #define DIRECTORY '5'
 #define OCT 8
 
+/*struct for the permission characters*/
 typedef struct {
     int flag;
     int index;
     int val;
 }permChar;
 
+/*simple version of list that only 
+lists the names of the archived files/directories/symlinks*/
 void tarlist(char *filename, char **targets, int numtargets){
     int fdTar;
      fdTar = open(filename, O_RDONLY);
-
+     /*can we open?*/
     if(fdTar < 0) {
         perror("listing");
         exit(-1);
@@ -36,6 +39,7 @@ void tarlist(char *filename, char **targets, int numtargets){
     char *strbuff, *buf, *buf3;
     struct utimbuf modTime;
     char *path;
+    /*read in each block*/
     while((size = read(fdTar, &fileheader, 512)) != 0) {
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
@@ -44,7 +48,7 @@ void tarlist(char *filename, char **targets, int numtargets){
                 targetflag = 1;
             }
         }
-
+        /*is it the correct file type?*/
         if(targetflag == 1){
             if(fileheader.name[0] != '\0'
                     && (fileheader.typeflag[0] == '0'
@@ -53,7 +57,6 @@ void tarlist(char *filename, char **targets, int numtargets){
                     ||  fileheader.typeflag[0] == DIRECTORY)) {
 
                 path = makepath(&fileheader.name);
-                printf("%s\n", path);
                 skiptonextheader(&fileheader,fdTar);
             }
         } else {
@@ -63,11 +66,14 @@ void tarlist(char *filename, char **targets, int numtargets){
     }
     close(fdTar);
 }
-
+/*Verbose version of list that 
+prints out extra information about 
+each file/directory/symlink*/
 void tarlistVerbose(char *filename, char **targets, int numtargets){
     int fdTar;
      fdTar = open(filename, O_RDONLY);
-
+     /*array holding the possible flags 
+     with their respective indexes and values*/
     static permChar PERMCHARS[] = {
     {S_IRUSR, 1, 'r'}, {S_IWUSR, 2, 'w'}, {S_IXUSR, 3, 'x'},
     {S_IRGRP, 4, 'r'}, {S_IWGRP, 5, 'w'}, {S_IXGRP, 6, 'x'},
@@ -76,7 +82,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     {S_IFLNK, 0, 'l'}, {0, 0, 0}
     };
 
-
+    /*can we open?*/
     if(fdTar < 0) {
         perror("listing");
         exit(-1);
@@ -91,7 +97,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
     time_t mtime;
     char * path;
     struct tm *info;
-
+    /*read in each block*/
     while((size = read(fdTar, &fileheader, 512)) != 0) {
 
         /*if targets check*/
@@ -102,7 +108,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                 targetflag = 1;
             }
         }
-
+        /*is it the correct file type?*/
         if(targetflag == 1){
             if(fileheader.name[0] != '\0' && 
                        (fileheader.typeflag[0] == '0'
@@ -115,17 +121,18 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                     permStr[i] = '-';
                 }
                 permStr[i] = 0;
-
+                /*is it a directory?*/
                 for(pChar = PERMCHARS; pChar->flag; pChar++){
                     if(pChar -> flag == 16384){
                         if(*fileheader.typeflag == DIRECTORY){
                             permStr[pChar->index] = pChar -> val;
                         }
+                    /*is it a symlink?*/
                     }else if(pChar -> flag == S_IFLNK){
                         if(*fileheader.typeflag == '2'){
                             permStr[pChar->index] = pChar -> val;
                     }
-
+                    /*normal file*/
                     }else if(mode & pChar -> flag){
                         permStr[pChar->index] = pChar -> val;
                     }
@@ -136,7 +143,7 @@ void tarlistVerbose(char *filename, char **targets, int numtargets){
                 strftime(timebuf, 80, "%Y-%m-%d %H:%M", info);
                 path = makepath(&fileheader.name);
                 size = strtol(fileheader.size, &buf, OCT);
-
+                /*print out the final info*/
                 printf("%s %s/%s %9u %s %s\n", permStr,
                         fileheader.uname, fileheader.gname,
                         size, timebuf, path);
