@@ -154,7 +154,7 @@ int validateheader(header *fileheader) {
     //fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
     //fprintf(stdout,"Actual sum (copy): %s\n", chksum);
 
-    snprintf(newsumstr, 8, "%0o", newchksum);
+    snprintf(newsumstr, 8, "%0*o", 7, newchksum);
     //fprintf(stdout,"Calculated sum: %s\n", newsumstr);
 
     //return 1;
