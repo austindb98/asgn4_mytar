@@ -92,8 +92,10 @@ int main(int argc, char *argv[]) {
                 targetfiles = calloc(sizeof(char *),argc-3);
             }
             for(i = 3; i < argc; i++) {
+                printf("TARGET: %s\n", argv[i]);
                 targetfiles[i-3] = argv[i];
             }
+
             tarlistVerbose(argv[2], targetfiles, argc-3);
             exit(0);
         }
