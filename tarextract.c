@@ -100,7 +100,12 @@ int extract(char *archivename, char **targets, int numtargets) {
                     targetflag = 0;
                 }
             } else if(!targetflag) {
-                targetflag = !strncmp(path,targets[i],strlen(path));
+                if(strlen(targetendptr) <= 1){
+                    fprintf(stderr,"only &s after end ptr", targetendptr);
+                    targetflag = 1;
+                } else {
+                    targetflag = !strncmp(path,targets[i],strlen(path));
+                }
             } else {
                 fprintf(stderr, "%s does not equal %s\n\n",path,targets[i]);
             }
@@ -118,7 +123,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                 //printf("Name of Directory: %s\n", path);
                 mode = strtol(fileheader.mode, &buf3, OCT);
                 mkdir(path, mode);
-                fprintf(stderr, "Making directory: %s\n",path);
+                fprintf(stderr, "Making directory: %s\n\n",path);
                 chown(path, strtol(fileheader.uid, &strbuff, OCT),
                 strtol(fileheader.gid, &strbuff, OCT));
                 setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
