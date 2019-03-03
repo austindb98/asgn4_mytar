@@ -66,14 +66,14 @@ header *buildheader(char *path) {
         while(strlen(name_ptr) > 100) {
             name_ptr = strchr(name_ptr,'/')+1;
         }
-        strncpy(out->name, name_ptr+1, strlen(name_ptr));
+        strncpy(out->name, name_ptr, strlen(name_ptr));
     }
     if((filestat.st_mode & S_IFMT) == S_IFDIR) {
         out->name[strlen(out->name)] = '/';
         //printf("%s\n", out->name);
         //strcat(out->name, "/");
     }
-    strncpy(out->prefix, path, name_ptr-path);
+    strncpy(out->prefix, path, name_ptr-path-1);
 
     octaltoasciiset(out->mode, filestat.st_mode, 8);
     octaltoasciiset(out->uid, filestat.st_uid, 8);
