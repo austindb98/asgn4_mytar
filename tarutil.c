@@ -136,9 +136,11 @@ void skiptonextheader(header *fileheader, int fdTar) {
 int validateheader(header *fileheader) {
     header new;
     memcpy(&new, fileheader, 512);
+
     char chksum[9];
     memset(chksum,'\0',9);
     memcpy(chksum, fileheader->chksum, 8);
+
     int newchksum = 0;
     char *newsumstr = calloc(1,8);
     int i;
@@ -149,12 +151,12 @@ int validateheader(header *fileheader) {
     for(i = 0; i < 512; i++) {
         newchksum += byteptr[i];
     }
-    fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
-    fprintf(stdout,"Actual sum (copy): %s\n", chksum);
+    //fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
+    //fprintf(stdout,"Actual sum (copy): %s\n", chksum);
 
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
-    fprintf(stdout,"Calculated sum: %s\n", newsumstr);
+    //fprintf(stdout,"Calculated sum: %s\n", newsumstr);
 
-    return 1;
-    //return !strncmp(newsumstr,chksum,8);
+    //return 1;
+    return !strncmp(newsumstr,chksum,8);
 }
