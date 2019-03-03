@@ -132,16 +132,17 @@ void skiptonextheader(header *fileheader, int fdTar) {
 }
 
 int validateheader(header *fileheader) {
-    header *new = fileheader;
+    header new;
+    new  = *fileheader;
     char chksum[9];
     memset(chksum,'\0',9);
     memcpy(chksum, fileheader->chksum, 8);
     int newchksum = 0;
     char *newsumstr = calloc(1,8);
     int i;
-    uint8_t *byteptr = (void *)fileheader;
+    uint8_t *byteptr = (void *)(&new);
 
-    memset(new->chksum, ' ', 8);
+    memset(new.chksum, ' ', 8);
 
     for(i = 0; i < 512; i++) {
         printf("Reading byte no. %d\n",byteptr[i]);
