@@ -127,7 +127,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                     targetflag = !strcmp(path,targets[i]);
                 }
                 targetflag = !strncmp(path,targets[i],length);
-                printf("%d", targetflag);
+                fprintf(stderr,"%d\n", targetflag);
             }
         }
 
