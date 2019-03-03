@@ -147,11 +147,11 @@ int validateheader(header *fileheader) {
     for(i = 0; i < 512; i++) {
         newchksum += byteptr[i];
     }
-    printf("Actual sum (source): %s\n", chksum);
-    printf("Actual sum (copy): %s\n", chksum);
+    fprintf(stderr,"Actual sum (source): %s\n", chksum);
+    fprintf(stderr,"Actual sum (copy): %s\n", chksum);
 
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
-    printf("Calculated sum: %s\n", newsumstr);
+    fprintf(stderr,"Calculated sum: %s\n", newsumstr);
 
     return 1;
     //return !strncmp(newsumstr,chksum,8);
