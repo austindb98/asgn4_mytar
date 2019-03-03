@@ -87,7 +87,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                     targetflag = !strncmp(pathendptr,
                             targetendptr,strlen(targetendptr));
                     if(targetflag) {
-                        fprintf("%s equals %s\n\n",path,targets[i]);
+                        fprintf(stderr, "%s equals %s\n\n",path,targets[i]);
                     }
                 } else {
                     fprintf(stderr,"length not equal\n");
