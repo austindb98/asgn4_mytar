@@ -159,11 +159,11 @@ int validateheader(header *fileheader) {
 
     //return 1;
     int out = strstr(newsumstr,chksum)?1:0;
-    if(out == 0) {
+    /*if(out == 0) {
         printheader(fileheader);
         fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
         fprintf(stdout,"Calculated sum: %s\n", newsumstr);
-    }
+    }*/
 
     return out;
 }
