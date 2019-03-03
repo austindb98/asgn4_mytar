@@ -142,7 +142,7 @@ int validateheader(header *fileheader) {
     memcpy(chksum, fileheader->chksum, 8);
 
     int newchksum = 0;
-    char *newsumstr = calloc(1,8);
+    char *newsumstr = calloc(1,9);
     int i;
     uint8_t *byteptr = (void *)(&new);
 
@@ -158,10 +158,14 @@ int validateheader(header *fileheader) {
     fprintf(stderr,"Calculated sum: %s\n", newsumstr);
 
     int out;
-    if(strlen(chksum) == 0 ){
+    if(chksum[0] != '0') {
         out = 0;
+    }
+    if(strlen(chksum) == 0 ){
+
     } else {
-        out = strstr(newsumstr,chksum)?1:0;
+        //out = strstr(newsumstr,chksum)?1:0;
+        out = !strncmp(newsumstr,chksum,8)
     }
     /*if(out == 0) {
         printheader(fileheader);
