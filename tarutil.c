@@ -135,7 +135,7 @@ void skiptonextheader(header *fileheader, int fdTar) {
 
 int validateheader(header *fileheader) {
     header new;
-    new  = *fileheader;
+    memcpy(&new, fileheader, 512);
     char chksum[9];
     memset(chksum,'\0',9);
     memcpy(chksum, fileheader->chksum, 8);
