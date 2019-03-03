@@ -150,7 +150,7 @@ int validateheader(header *fileheader) {
     printf("Actual sum: %s\n", chksum);
 
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
-    printf("Calculated sum: %s\n", newchksum);
-        
+    printf("Calculated sum: %s\n", newsumstr);
+
     return !strncmp(newsumstr,chksum,8);
 }
