@@ -20,5 +20,6 @@ void makedir(char *path, mode_t mode);
 void printheader(header *fileheader);
 int isheadernull(header *tarheader);
 void skiptonextheader(header *fileheader, int fdTar);
+int validateheader(header fileheader);
 
 #endif

@@ -129,3 +129,17 @@ void skiptonextheader(header *fileheader, int fdTar) {
         }
     }
 }
+
+int validateheader(header fileheader) {
+    header new = fileheader;
+    int chksum = strtol(fileheader.chksum, NULL, 8);
+    int newchksum = 0;
+    int i;
+
+    memset(new.chksum, ' ', 8);
+
+    for(i = 0; i < 512; i++) {
+        newchksum+=((uint8_t *)(&fileheader))[i];
+    }
+    return newchksum == chksum;
+}
