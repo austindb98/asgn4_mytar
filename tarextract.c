@@ -119,8 +119,8 @@ int extract(char *archivename, char **targets, int numtargets) {
                 }
                 targetflag = !strncmp(path,targets[i],length);
             } else {
-                fprintf(stderr,"Length: %d \tPath: %s",strlen(path),path);
-                fprintf(stderr,"Length: %d \tTarget: %s",
+                fprintf(stderr,"Length: %d \tPath: %s\n",strlen(path),path);
+                fprintf(stderr,"Length: %d \tTarget: %s\n",
                         strlen(targets[i]),targets[i]);
             }
         }
