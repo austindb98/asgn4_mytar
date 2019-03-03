@@ -151,16 +151,13 @@ int validateheader(header *fileheader) {
     for(i = 0; i < 512; i++) {
         newchksum += byteptr[i];
     }
-    //fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
+    fprintf(stderr,"Actual sum (source): %s\n", fileheader->chksum);
     //fprintf(stdout,"Actual sum (copy): %s\n", chksum);
 
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
-    //fprintf(stdout,"Calculated sum: %s\n", newsumstr);
+    fprintf(stderr,"Calculated sum: %s\n", newsumstr);
 
-    //return 1;
-    int notequal = strcspn(chksum,newsumstr);
     int out = strstr(newsumstr,chksum)?1:0;
-    fprintf(stderr, "%d\n", notequal);
     /*if(out == 0) {
         printheader(fileheader);
         fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
