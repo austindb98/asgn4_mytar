@@ -96,7 +96,8 @@ int extract(char *archivename, char **targets, int numtargets) {
                     fprintf(stderr,"only &s after end ptr\n\n", targetendptr);
                     targetflag = 1;
                 } else {
-                    fprintf(stderr, "length of target: %d", strlen(targetendptr));
+                    fprintf(stderr, "length of target: %d",
+                        strlen(targetendptr));
                     fprintf(stderr, "length of path: %d", strlen(pathendptr));
                     fprintf(stderr,"length not equal\n\n");
                     targetflag = 0;
