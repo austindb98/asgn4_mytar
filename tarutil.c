@@ -157,7 +157,12 @@ int validateheader(header *fileheader) {
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
     fprintf(stderr,"Calculated sum: %s\n", newsumstr);
 
-    int out = strstr(newsumstr,chksum)?1:0;
+    int out;
+    if(strlen(chksum) == 0 ){
+        out = 0;
+    } else {
+        out = strstr(newsumstr,chksum)?1:0;
+    }
     /*if(out == 0) {
         printheader(fileheader);
         fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
