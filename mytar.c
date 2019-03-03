@@ -41,14 +41,6 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    tarfd = open(argv[2],O_RDONLY);
-    read(tarfd,init,512);
-    if(!validateheader(init)){
-        fprintf(stderr, "invalid tar file");
-        exit(EXIT_FAILURE);
-    }
-    close(tarfd);
-
     if(c) {
         tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
         for(i = 3; i < argc; i++) {
@@ -63,6 +55,15 @@ int main(int argc, char *argv[]) {
         close(tarfd);
         exit(0);
     } else if(x) {
+        tarfd = open(argv[2],O_RDONLY);
+        read(tarfd,init,512);
+        if(!validateheader(init)){
+            fprintf(stderr, "invalid tar file\n");
+            exit(EXIT_FAILURE);
+        }
+        close(tarfd);
+
+
         char **targetfiles = NULL;
         /*assumes xf file targets*/
         if(argc > 3) {
@@ -75,6 +76,15 @@ int main(int argc, char *argv[]) {
         exit(0);
 
     } else if(t) {
+
+        tarfd = open(argv[2],O_RDONLY);
+        read(tarfd,init,512);
+        if(!validateheader(init)){
+            fprintf(stderr, "invalid tar file\n");
+            exit(EXIT_FAILURE);
+        }
+        close(tarfd);
+
         if(v){
             char **targetfiles = NULL;
             /*assumes xf file targets*/
