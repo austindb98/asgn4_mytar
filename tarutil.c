@@ -165,7 +165,7 @@ int validateheader(header *fileheader) {
 */
     //} else {
         //out = strstr(newsumstr,chksum)?1:0;
-        out = !strncmp(newsumstr,chksum,8)
+        out = !strncmp(newsumstr,chksum,8);
     //}
     return out;
 }
