@@ -82,7 +82,8 @@ int extract(char *archivename, char **targets, int numtargets) {
                 pathendptr?pathendptr-path:strlen(path));
             if(targetflag) {
                 if(strlen(pathendptr)==strlen(targetendptr)){
-                    targetflag = !strncmp(pathendptr,targetendptr,strlen(targetendptr));
+                    targetflag = !strncmp(pathendptr,
+                            targetendptr,strlen(targetendptr));
                 } else {
                     targetflag = 0;
                 }
