@@ -79,7 +79,8 @@ int extract(char *archivename, char **targets, int numtargets) {
             targetendptr = strrchr(targets[i],'/');
             pathendptr = strrchr(path,'/');
             targetflag = !strncmp(path,targets[i],
-                targetendptr&&pathendptr?targetendptr-targets[i]:strlen(targets[i]));
+                targetendptr&&pathendptr?
+                        targetendptr-targets[i]:strlen(targets[i]));
 
             if(targetflag && targetendptr && pathendptr) {
                 fprintf(stderr,"prefix equal\n");
