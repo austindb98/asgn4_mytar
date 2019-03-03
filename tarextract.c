@@ -114,6 +114,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                 //printf("Name of Directory: %s\n", path);
                 mode = strtol(fileheader.mode, &buf3, OCT);
                 mkdir(path, mode);
+                printf("Making directory: %s\n",path);
                 chown(path, strtol(fileheader.uid, &strbuff, OCT),
                 strtol(fileheader.gid, &strbuff, OCT));
                 setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
