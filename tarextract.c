@@ -53,8 +53,19 @@ int extract(char *archivename, char **targets, int numtargets) {
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
         for(i =0; i < numtargets; i++) {
-            if(strlen(path) < strlen(targets[i])){
+            char *lastslashTarget = strrchr(targets[i], '/');
+            char *lastslashPath = strrchr(targets[i], '/');
+            if(strlen(path) <
+              (strlen(targets[i]) - (strlen(lastslashTarget)) - 1)){
+
                 if(!strncmp(path, targets[i], strlen(path))){
+                    targetflag = 1;
+                }
+            }else if((strlen(path) - strlen(lastslashPath)) ==
+                    (strlen(targets[i]) - (strlen(lastslashTarget)))){
+
+                if(!strncmp(lastslashPath, lastslashTarget,
+                    strlen(lastslashTarget))){
                     targetflag = 1;
                 }
             }else{
