@@ -145,10 +145,10 @@ int validateheader(header *fileheader) {
     memset(new.chksum, ' ', 8);
 
     for(i = 0; i < 512; i++) {
-        printf("Reading byte no. %d\n",byteptr[i]);
         newchksum += byteptr[i];
     }
-    printf("Actual sum: %s\n", chksum);
+    printf("Actual sum (source): %s\n", chksum);
+    printf("Actual sum (copy): %s\n", chksum);
 
     snprintf(newsumstr, 8, "%0*o", 7, newchksum);
     printf("Calculated sum: %s\n", newsumstr);
