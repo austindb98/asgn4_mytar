@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
     int c,x,t,v,s;
     int tarfd;
     int i;
-    header init;
+    header *init;
+    init = malloc(512);
 
     if(argc <= 2) {
         fprintf(stderr,"Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]");
@@ -40,9 +41,9 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    tarfd = open(argv[2],O_RDONLY|O_WRONLY|O_CREAT|O_TRUNC,0644);
-    read(tarfd,&init,512);
-    if(!validateheader(&init)){
+    tarfd = open(argv[2],O_RDONLY);
+    read(tarfd,init,512);
+    if(!validateheader(init)){
         fprintf(stderr, "invalid tar file");
         exit(EXIT_FAILURE);
     }
