@@ -141,5 +141,7 @@ int validateheader(header fileheader) {
     for(i = 0; i < 512; i++) {
         newchksum+=((uint8_t *)(&fileheader))[i];
     }
+    printf("Actual sum: %d\n", chksum);
+    printf("Calculated sum: %d\n", newchksum);
     return newchksum == chksum;
 }

@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
     read(tarfd,&init,512);
     if(!validateheader(init)){
         fprintf(stderr, "invalid tar file");
+        exit(EXIT_FAILURE);
     }
     close(tarfd);
 
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
         for(i = 3; i < argc; i++) {
             targetfiles[i-3] = argv[i];
         }
-        
+
         tarlist(argv[2], targetfiles, argc-3);
         exit(0);
     }
