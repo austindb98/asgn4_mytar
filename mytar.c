@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     }
 
     if(!(c||x||t)) {
-        printf("Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]\n");
+        fprintf(stderr,"Usage: mytar [ctxvS]f tarfile [ path [ ... ] ]\n");
         exit(EXIT_FAILURE);
     }
 

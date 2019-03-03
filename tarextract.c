@@ -134,22 +134,11 @@ int extract(char *archivename, char **targets, int numtargets) {
             int bytes = strtol(fileheader.size, &buf3, OCT);
             buf = calloc(513, sizeof(char));
 
-            for(;bytes>=512;bytes-=512) {
-                if(read(fdTar, buf, 512)!=512) {
-                    perror("read");
-                    exit(EXIT_FAILURE);
-                }
-            }
-
-            if(bytes){
-                if(read(fdTar, buf, 512)!=512) {
-                    perror("read");
-                    exit(EXIT_FAILURE);
-                }
-            }
+            skiptonextheader(&fileheader,fdTar);
         }
     }
 
     close(fdTar);
     return 0;
+
 }
