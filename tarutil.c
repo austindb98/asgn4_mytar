@@ -140,6 +140,7 @@ int validateheader(header *fileheader) {
     memset(new->chksum, ' ', 8);
 
     for(i = 0; i < 512; i++) {
+        printf("Reading byte no. %d\n",byteptr[i]);
         newchksum += byteptr[i];
     }
     printf("Actual sum: %d\n", chksum);
