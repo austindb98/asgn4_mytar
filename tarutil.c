@@ -2,6 +2,7 @@
 #include "tarheader.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 char *makepath(header *fileheader) {
@@ -132,8 +133,11 @@ void skiptonextheader(header *fileheader, int fdTar) {
 
 int validateheader(header *fileheader) {
     header *new = fileheader;
-    int chksum = strtol(fileheader->chksum, NULL, 8);
+    char chksum[9];
+    memset(chksum,'\0',9);
+    memcpy(chksum, fileheader->chksum, 8);
     int newchksum = 0;
+    char *newsumstr = calloc(1,8);
     int i;
     uint8_t *byteptr = (void *)fileheader;
 
@@ -143,7 +147,10 @@ int validateheader(header *fileheader) {
         printf("Reading byte no. %d\n",byteptr[i]);
         newchksum += byteptr[i];
     }
-    printf("Actual sum: %d\n", chksum);
-    printf("Calculated sum: %d\n", newchksum);
-    return newchksum == chksum;
+    printf("Actual sum: %s\n", chksum);
+
+    snprintf(newsumstr, 8, "%0*o", 7, newchksum);
+    printf("Calculated sum: %s\n", newchksum);
+        
+    return !strncmp(newsumstr,chksum,8);
 }
