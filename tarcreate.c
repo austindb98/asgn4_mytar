@@ -70,7 +70,7 @@ header *buildheader(char *path) {
     }
     if((filestat.st_mode & S_IFMT) == S_IFDIR) {
         out->name[strlen(out->name)] = '/';
-        printf("%s\n", out->name);
+        //printf("%s\n", out->name);
         //strcat(out->name, "/");
     }
     strncpy(out->prefix, path, name_ptr-path);
@@ -113,7 +113,7 @@ int addtoarchive(char *path, int fd) {
     char *pathparent = calloc(1,strlen(path) + 4);
 
 
-    printf("Building header for: %s\n", path);
+    //printf("Building header for: %s\n", path);
 
     fileheader = buildheader(path);
     if(!fileheader) {
@@ -121,10 +121,10 @@ int addtoarchive(char *path, int fd) {
     }
 
     write(fd,fileheader,512);
-    printf("Wrote header to file\n");
+    //printf("Wrote header to file\n");
 
     if(!strncmp(fileheader->typeflag, "5", 1)) {
-        printf("File is directory\n");
+        //printf("File is directory\n");
 
         current_dir = opendir(path);
         if(!current_dir) {
@@ -147,25 +147,26 @@ int addtoarchive(char *path, int fd) {
                     strcat(new_path,"/");
                     strcat(new_path, current_dirent->d_name);
 
-                    printf("Adding to archive: %s\n", new_path);
+                    //printf("Adding to archive: %s\n", new_path);
                     addtoarchive(new_path, fd);
 
                     free(new_path);
                 } else {
                     fprintf(stderr,"path too long");
                     free(new_path);
+                    exit(0);
                 }
             } else {
-                printf("Reached %s\n", current_dirent->d_name);
+                //printf("Reached %s\n", current_dirent->d_name);
             }
         }
-        printf("Reached end of dir\n");
+        //printf("Reached end of dir\n");
 
         closedir(current_dir);
     } else {
         cur_file = open(path, O_RDONLY);
         memset(buffer, '\0', 512);
-        printf("Copying file: %s\n",path);
+        //printf("Copying file: %s\n",path);
         while(read(cur_file, buffer, 512)>0) {
             write(fd, buffer, 512);
             memset(buffer, '\0', 512);
