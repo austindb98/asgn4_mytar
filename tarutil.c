@@ -158,5 +158,12 @@ int validateheader(header *fileheader) {
     //fprintf(stdout,"Calculated sum: %s\n", newsumstr);
 
     //return 1;
+    int out = !strncmp(newsumstr,chksum,8);
+    if(out == 0) {
+        printheader(fileheader);
+        fprintf(stdout,"Actual sum (source): %s\n", fileheader->chksum);
+        fprintf(stdout,"Calculated sum: %s\n", newsumstr);
+    }
+
     return !strncmp(newsumstr,chksum,8);
 }
