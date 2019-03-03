@@ -52,7 +52,7 @@ int extract(char *archivename, char **targets, int numtargets) {
         /*if targets check*/
         int targetflag = targets?0:1;
         path = makepath(&fileheader);
-        printf("Looking for: %s\n", path);
+        fprintf(stderr,"Looking for: %s\n", path);
         for(i =0; i < numtargets; i++) {
             /*char *lastslashTarget = strrchr(targets[i], '/');
             char *lastslashPath = strrchr(targets[i], '/');
@@ -90,7 +90,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                     targetflag = !strncmp(pathendptr,
                             targetendptr,strlen(targetendptr));
                     if(targetflag) {
-                        fprintf(stdout, "%s equals %s\n\n",path,targets[i]);
+                        fprintf(stderr, "%s equals %s\n\n",path,targets[i]);
                     }
                 } else {
                     fprintf(stderr,"length not equal\n\n");
@@ -99,7 +99,7 @@ int extract(char *archivename, char **targets, int numtargets) {
             } else if(!targetflag) {
                 targetflag = !strncmp(path,targets[i],strlen(path));
             } else {
-                fprintf(stdout, "%s does not equal %s\n\n",path,targets[i]);
+                fprintf(stderr, "%s does not equal %s\n\n",path,targets[i]);
             }
         }
 
@@ -115,7 +115,7 @@ int extract(char *archivename, char **targets, int numtargets) {
                 //printf("Name of Directory: %s\n", path);
                 mode = strtol(fileheader.mode, &buf3, OCT);
                 mkdir(path, mode);
-                printf("Making directory: %s\n",path);
+                fprintf(stderr, "Making directory: %s\n",path);
                 chown(path, strtol(fileheader.uid, &strbuff, OCT),
                 strtol(fileheader.gid, &strbuff, OCT));
                 setTime(path, strtol(fileheader.mtime, &strbuff, OCT));
