@@ -55,8 +55,10 @@ int extract(char *archivename, char **targets, int numtargets) {
         for(i =0; i < numtargets; i++) {
             char *lastslashTarget = strrchr(targets[i], '/');
             char *lastslashPath = strrchr(targets[i], '/');
-            if(strlen(path) <
-              (strlen(targets[i]) - (strlen(lastslashTarget)) - 1)){
+            printf("T: %d",strlen(lastslashTarget));
+            printf("P: %d", strlen(lastslashPath));
+            if((strlen(path) <
+              (strlen(targets[i])) - strlen(lastslashTarget))){
 
                 if(!strncmp(path, targets[i], strlen(path))){
                     targetflag = 1;
@@ -64,7 +66,7 @@ int extract(char *archivename, char **targets, int numtargets) {
             }else if((strlen(path) - strlen(lastslashPath)) ==
                     (strlen(targets[i]) - (strlen(lastslashTarget)))){
 
-                if(!strncmp(lastslashPath, lastslashTarget,
+                if(!strncmp(lastslashTarget, lastslashPath,
                     strlen(lastslashTarget))){
                     targetflag = 1;
                 }
